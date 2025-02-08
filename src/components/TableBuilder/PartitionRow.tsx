@@ -1,64 +1,57 @@
+import React from "react";
 import { Tr, Td, Input, Button, useTheme } from "@chakra-ui/react";
-import { Characteristic } from "./CharacteristicRow";
-import { Parameter } from "./ParameterRow";
-
-export type Partition = { id: number; name: string; value: string };
+import { Characteristic, Parameter, Partition } from "../../types/types";
 
 type PartitionRowProps = {
   parameter: Parameter;
   characteristic: Characteristic;
   partition: Partition;
-  updateParameter: (paramId: number, updatedParam: Parameter) => void;
-  deletePartition: (paramId: number, charId: number, partId: number) => void;
+  updatePartition: (
+    parameterId: number,
+    characteristicId: number,
+    partitionId: number,
+    updated: Partial<Partition>
+  ) => void;
+  deletePartition: (parameterId: number, characteristicId: number, partitionId: number) => void;
 };
 
 const PartitionRow: React.FC<PartitionRowProps> = ({
   parameter,
   characteristic,
   partition,
-  updateParameter,
+  updatePartition,
   deletePartition,
 }) => {
   const theme = useTheme();
-  
+
   return (
     <Tr>
       <Td>
         <Input
           color={theme.colors.text.primary}
           value={partition.name}
-          onChange={(e) => {
-            const updatedChars = parameter.characteristics.map((c) =>
-              c.id === characteristic.id
-                ? {
-                    ...c,
-                    partitions: c.partitions.map((p) =>
-                      p.id === partition.id ? { ...p, name: e.target.value } : p
-                    ),
-                  }
-                : c
-            );
-            updateParameter(parameter.id, { ...parameter, characteristics: updatedChars });
-          }}
+          onChange={(e) =>
+            updatePartition(
+              parameter.id,
+              characteristic.id,
+              partition.id,
+              { name: e.target.value }
+            )
+          }
         />
       </Td>
       <Td>
         <Input
           color={theme.colors.text.primary}
           value={partition.value}
-          onChange={(e) => {
-            const updatedChars = parameter.characteristics.map((c) =>
-              c.id === characteristic.id
-                ? {
-                    ...c,
-                    partitions: c.partitions.map((p) =>
-                      p.id === partition.id ? { ...p, value: e.target.value } : p
-                    ),
-                  }
-                : c
-            );
-            updateParameter(parameter.id, { ...parameter, characteristics: updatedChars });
-          }}
+          onChange={(e) =>
+            updatePartition(
+              parameter.id,
+              characteristic.id,
+              partition.id,
+              { value: e.target.value }
+            )
+          }
         />
       </Td>
       <Td>
@@ -67,7 +60,9 @@ const PartitionRow: React.FC<PartitionRowProps> = ({
           bg={theme.colors.delete[500]}
           color={theme.colors.text.primary}
           _hover={{ bg: theme.colors.delete[600] }}
-          onClick={() => deletePartition(parameter.id, characteristic.id, partition.id)}
+          onClick={() =>
+            deletePartition(parameter.id, characteristic.id, partition.id)
+          }
         >
           Delete
         </Button>
