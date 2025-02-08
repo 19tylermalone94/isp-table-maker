@@ -1,5 +1,6 @@
-import { Box, Flex, IconButton, Text, Spacer, useTheme } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Text, Spacer, useTheme, Link } from "@chakra-ui/react";
 import { MoonIcon } from "@chakra-ui/icons";
+import { FaGithub } from "react-icons/fa";
 
 type HeaderProps = {
   toggleTheme: () => void;
@@ -15,6 +16,20 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme }) => {
           ISP Table Maker
         </Text>
         <Spacer />
+        <Link 
+          href="https://github.com/19tylermalone94/isp-table-maker" 
+          isExternal
+          aria-label="GitHub Repository"
+          mx={4}
+        >
+          <IconButton
+            icon={<FaGithub />}
+            aria-label="GitHub Repository"
+            bg="transparent"
+            color={theme.colors.text.primary}
+            _hover={{ bg: theme.colors.brand[500] }}
+          />
+        </Link>
         <IconButton
           aria-label="Cycle themes"
           icon={<MoonIcon color={theme.colors.text.primary} fontSize="lg" />}
