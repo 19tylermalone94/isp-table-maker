@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "ISP Table Maker",
+  "name": "Input Space Partitioning Table Maker",
   "icons": [
     {
       "src": "favicon.ico",
