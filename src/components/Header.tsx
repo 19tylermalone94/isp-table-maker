@@ -1,5 +1,5 @@
 import { Box, Flex, IconButton, Text, Spacer, useTheme } from "@chakra-ui/react";
-import { RepeatIcon } from "@chakra-ui/icons";
+import { MoonIcon } from "@chakra-ui/icons";
 
 type HeaderProps = {
   toggleTheme: () => void;
@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme }) => {
         <Spacer />
         <IconButton
           aria-label="Cycle themes"
-          icon={<RepeatIcon color={theme.colors.text.primary} fontSize="lg" />}
+          icon={<MoonIcon color={theme.colors.text.primary} fontSize="lg" />}
           onClick={toggleTheme}
           bg="transparent"
           _hover={{ bg: theme.colors.brand[500] }}
