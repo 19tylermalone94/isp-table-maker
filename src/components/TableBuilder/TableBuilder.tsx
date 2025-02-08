@@ -110,6 +110,7 @@ const TableBuilder: React.FC = () => {
           <Button
             bg={theme.colors.brand[500]}
             color={theme.colors.text.primary}
+            _hover={{ bg: theme.colors.brand[600] }}
             onClick={addParameter}
           >
             Add Parameter
@@ -117,6 +118,7 @@ const TableBuilder: React.FC = () => {
           <Button
             bg={theme.colors.brand[500]}
             color={theme.colors.text.primary}
+            _hover={{ bg: theme.colors.brand[600] }}
             onClick={copyToMarkdown}
           >
             Copy Markdown
@@ -124,6 +126,7 @@ const TableBuilder: React.FC = () => {
           <Button
             bg={theme.colors.brand[500]}
             color={theme.colors.text.primary}
+            _hover={{ bg: theme.colors.brand[600] }}
             onClick={previewMarkdown}
           >
             Preview Markdown
@@ -231,6 +234,7 @@ const TableBuilder: React.FC = () => {
             <Button
               bg={theme.colors.brand[500]}
               color={theme.colors.text.primary}
+              _hover={{ bg: theme.colors.brand[600] }}
               onClick={onClose}
             >
               Close
