@@ -103,7 +103,7 @@ const TableBuilder: React.FC = () => {
     navigator.clipboard.writeText(markdown);
     toast({
       title: "Copied to clipboard",
-      description: "Markdown table with borders copied!",
+      description: "Markdown table copied!",
       status: "success",
       duration: 2000,
       isClosable: true,
