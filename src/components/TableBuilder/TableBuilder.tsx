@@ -77,7 +77,7 @@ const TableBuilder: React.FC = () => {
   };
 
   const copyToMarkdown = () => {
-    let markdown = `| Variable | Characteristic | Partition | Value |\n`;
+    let markdown = `| Parameter | Characteristic | Partition | Value |\n`;
     markdown += `|----------|--------------|----------|-------|\n`;
 
     parameters.forEach((param) => {
