@@ -1,47 +1,58 @@
+import React from "react";
 import { Tr, Td, Input, Button, useTheme } from "@chakra-ui/react";
-import { Parameter } from "./ParameterRow";
-import PartitionRow, { Partition } from "./PartitionRow";
-
-export type Characteristic = { id: number; name: string; partitions: Partition[] };
+import PartitionRow from "./PartitionRow";
+import { Parameter, Characteristic } from "../../types/types";
 
 type CharacteristicRowProps = {
   parameter: Parameter;
   characteristic: Characteristic;
-  updateParameter: (paramId: number, updatedParam: Parameter) => void;
-  deleteCharacteristic: (paramId: number, charId: number) => void;
-  deletePartition: (paramId: number, charId: number, partId: number) => void;
+  updateParameter: (id: number, updated: Partial<Parameter>) => void;
+  deleteParameter: (id: number) => void;
+  addCharacteristic: (parameterId: number) => void;
+  updateCharacteristic: (
+    parameterId: number,
+    characteristicId: number,
+    updated: Partial<Characteristic>
+  ) => void;
+  deleteCharacteristic: (parameterId: number, characteristicId: number) => void;
+  addPartition: (parameterId: number, characteristicId: number) => void;
+  updatePartition: (
+    parameterId: number,
+    characteristicId: number,
+    partitionId: number,
+    updated: Partial<any>
+  ) => void;
+  deletePartition: (parameterId: number, characteristicId: number, partitionId: number) => void;
   isFirstCharacteristic: boolean;
   parameterRowSpan: number;
-  addCharacteristic: () => void;
-  deleteParameter: (paramId: number) => void;
 };
 
 const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
   parameter,
   characteristic,
   updateParameter,
+  deleteParameter,
+  addCharacteristic,
+  updateCharacteristic,
   deleteCharacteristic,
+  addPartition,
+  updatePartition,
   deletePartition,
   isFirstCharacteristic,
   parameterRowSpan,
-  addCharacteristic,
-  deleteParameter,
 }) => {
   const theme = useTheme();
 
-  const addPartition = () => {
-    const newPartition: Partition = {
-      id: Date.now(),
-      name: "",
-      value: "",
-    };
+  const addPartitionHandler = () => {
+    addPartition(parameter.id, characteristic.id);
+  };
 
-    const updatedChars = parameter.characteristics.map((c) =>
-      c.id === characteristic.id
-        ? { ...c, partitions: [...c.partitions, newPartition] }
-        : c
-    );
-    updateParameter(parameter.id, { ...parameter, characteristics: updatedChars });
+  const handleCharacteristicNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    updateCharacteristic(parameter.id, characteristic.id, { name: e.target.value });
+  };
+
+  const handleParameterNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    updateParameter(parameter.id, { name: e.target.value });
   };
 
   const rowCount = characteristic.partitions.length > 0 ? characteristic.partitions.length : 1;
@@ -56,16 +67,14 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
               <Input
                 color={theme.colors.text.primary}
                 value={parameter.name}
-                onChange={(e) =>
-                  updateParameter(parameter.id, { ...parameter, name: e.target.value })
-                }
+                onChange={handleParameterNameChange}
               />
               <Button
                 size="sm"
                 bg={theme.colors.brand[500]}
                 color={theme.colors.text.primary}
                 _hover={{ bg: theme.colors.brand[600] }}
-                onClick={addCharacteristic}
+                onClick={() => addCharacteristic(parameter.id)}
                 mt={2}
               >
                 Add Characteristic
@@ -87,19 +96,14 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
             <Input
               color={theme.colors.text.primary}
               value={characteristic.name}
-              onChange={(e) => {
-                const updatedChars = parameter.characteristics.map((c) =>
-                  c.id === characteristic.id ? { ...c, name: e.target.value } : c
-                );
-                updateParameter(parameter.id, { ...parameter, characteristics: updatedChars });
-              }}
+              onChange={handleCharacteristicNameChange}
             />
             <Button
               size="sm"
               bg={theme.colors.brand[500]}
               color={theme.colors.text.primary}
               _hover={{ bg: theme.colors.brand[600] }}
-              onClick={addPartition}
+              onClick={addPartitionHandler}
               mt={2}
             >
               Add Partition
@@ -120,38 +124,28 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
             <Input
               color={theme.colors.text.primary}
               value={firstPartition.name}
-              onChange={(e) => {
-                const updatedChars = parameter.characteristics.map((c) =>
-                  c.id === characteristic.id
-                    ? {
-                        ...c,
-                        partitions: c.partitions.map((p, idx) =>
-                          idx === 0 ? { ...p, name: e.target.value } : p
-                        ),
-                      }
-                    : c
-                );
-                updateParameter(parameter.id, { ...parameter, characteristics: updatedChars });
-              }}
+              onChange={(e) =>
+                updatePartition(
+                  parameter.id,
+                  characteristic.id,
+                  firstPartition.id,
+                  { name: e.target.value }
+                )
+              }
             />
           </Td>
           <Td>
             <Input
               color={theme.colors.text.primary}
               value={firstPartition.value}
-              onChange={(e) => {
-                const updatedChars = parameter.characteristics.map((c) =>
-                  c.id === characteristic.id
-                    ? {
-                        ...c,
-                        partitions: c.partitions.map((p, idx) =>
-                          idx === 0 ? { ...p, value: e.target.value } : p
-                        ),
-                      }
-                    : c
-                );
-                updateParameter(parameter.id, { ...parameter, characteristics: updatedChars });
-              }}
+              onChange={(e) =>
+                updatePartition(
+                  parameter.id,
+                  characteristic.id,
+                  firstPartition.id,
+                  { value: e.target.value }
+                )
+              }
             />
           </Td>
           <Td>
@@ -174,7 +168,7 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
             parameter={parameter}
             characteristic={characteristic}
             partition={part}
-            updateParameter={updateParameter}
+            updatePartition={updatePartition}
             deletePartition={deletePartition}
           />
         ))}
@@ -188,16 +182,14 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
             <Input
               color={theme.colors.text.primary}
               value={parameter.name}
-              onChange={(e) =>
-                updateParameter(parameter.id, { ...parameter, name: e.target.value })
-              }
+              onChange={handleParameterNameChange}
             />
             <Button
               size="sm"
               bg={theme.colors.brand[500]}
               color={theme.colors.text.primary}
               _hover={{ bg: theme.colors.brand[600] }}
-              onClick={addCharacteristic}
+              onClick={() => addCharacteristic(parameter.id)}
               mt={2}
             >
               Add Characteristic
@@ -219,19 +211,14 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
           <Input
             color={theme.colors.text.primary}
             value={characteristic.name}
-            onChange={(e) => {
-              const updatedChars = parameter.characteristics.map((c) =>
-                c.id === characteristic.id ? { ...c, name: e.target.value } : c
-              );
-              updateParameter(parameter.id, { ...parameter, characteristics: updatedChars });
-            }}
+            onChange={handleCharacteristicNameChange}
           />
           <Button
             size="sm"
             bg={theme.colors.brand[500]}
             color={theme.colors.text.primary}
             _hover={{ bg: theme.colors.brand[600] }}
-            onClick={addPartition}
+            onClick={addPartitionHandler}
             mt={2}
           >
             Add Partition

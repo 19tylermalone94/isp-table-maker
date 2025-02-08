@@ -1,36 +1,41 @@
+import React from "react";
 import { Tr, Td, Input, Button, useTheme } from "@chakra-ui/react";
-import CharacteristicRow, { Characteristic } from "./CharacteristicRow";
-
-export type Parameter = { id: number; name: string; characteristics: Characteristic[] };
+import CharacteristicRow from "./CharacteristicRow";
+import { Parameter } from "../../types/types";
 
 type ParameterRowProps = {
   parameter: Parameter;
-  updateParameter: (paramId: number, updatedParam: Parameter) => void;
-  deleteParameter: (paramId: number) => void;
-  deleteCharacteristic: (paramId: number, charId: number) => void;
-  deletePartition: (paramId: number, charId: number, partId: number) => void;
+  updateParameter: (id: number, updated: Partial<Parameter>) => void;
+  deleteParameter: (id: number) => void;
+  addCharacteristic: (parameterId: number) => void;
+  updateCharacteristic: (
+    parameterId: number,
+    characteristicId: number,
+    updated: Partial<any>
+  ) => void;
+  deleteCharacteristic: (parameterId: number, characteristicId: number) => void;
+  addPartition: (parameterId: number, characteristicId: number) => void;
+  updatePartition: (
+    parameterId: number,
+    characteristicId: number,
+    partitionId: number,
+    updated: Partial<any>
+  ) => void;
+  deletePartition: (parameterId: number, characteristicId: number, partitionId: number) => void;
 };
 
 const ParameterRow: React.FC<ParameterRowProps> = ({
   parameter,
   updateParameter,
   deleteParameter,
+  addCharacteristic,
+  updateCharacteristic,
   deleteCharacteristic,
+  addPartition,
+  updatePartition,
   deletePartition,
 }) => {
   const theme = useTheme();
-
-  const addCharacteristic = () => {
-    const newCharacteristic: Characteristic = {
-      id: Date.now(),
-      name: "",
-      partitions: [],
-    };
-    updateParameter(parameter.id, {
-      ...parameter,
-      characteristics: [...parameter.characteristics, newCharacteristic],
-    });
-  };
 
   const getParameterRowCount = (param: Parameter) => {
     if (param.characteristics.length === 0) return 1;
@@ -48,16 +53,14 @@ const ParameterRow: React.FC<ParameterRowProps> = ({
           <Input
             color={theme.colors.text.primary}
             value={parameter.name}
-            onChange={(e) =>
-              updateParameter(parameter.id, { ...parameter, name: e.target.value })
-            }
+            onChange={(e) => updateParameter(parameter.id, { name: e.target.value })}
           />
           <Button
             size="sm"
             bg={theme.colors.brand[500]}
             color={theme.colors.text.primary}
             _hover={{ bg: theme.colors.brand[600] }}
-            onClick={addCharacteristic}
+            onClick={() => addCharacteristic(parameter.id)}
             mt={2}
           >
             Add Characteristic
@@ -68,6 +71,7 @@ const ParameterRow: React.FC<ParameterRowProps> = ({
             color={theme.colors.text.primary}
             _hover={{ bg: theme.colors.delete[600] }}
             onClick={() => deleteParameter(parameter.id)}
+            ml={2}
           >
             Delete
           </Button>
@@ -87,12 +91,15 @@ const ParameterRow: React.FC<ParameterRowProps> = ({
           parameter={parameter}
           characteristic={char}
           updateParameter={updateParameter}
+          deleteParameter={deleteParameter}
+          addCharacteristic={addCharacteristic}
+          updateCharacteristic={updateCharacteristic}
           deleteCharacteristic={deleteCharacteristic}
+          addPartition={addPartition}
+          updatePartition={updatePartition}
           deletePartition={deletePartition}
           isFirstCharacteristic={index === 0}
           parameterRowSpan={totalRows}
-          addCharacteristic={addCharacteristic}
-          deleteParameter={deleteParameter}
         />
       ))}
     </>

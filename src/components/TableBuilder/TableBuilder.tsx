@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Button,
@@ -11,70 +11,25 @@ import {
   HStack,
   useTheme,
 } from "@chakra-ui/react";
-import ParameterRow, { Parameter } from "./ParameterRow";
+import ParameterRow from "./ParameterRow";
+import { useParameters } from "../../hooks/useParameters";
 
 const TableBuilder: React.FC = () => {
-  const [parameters, setParameters] = useState<Parameter[]>([]);
+  const {
+    parameters,
+    addParameter,
+    updateParameter,
+    deleteParameter,
+    addCharacteristic,
+    updateCharacteristic,
+    deleteCharacteristic,
+    addPartition,
+    updatePartition,
+    deletePartition,
+  } = useParameters();
+
   const toast = useToast();
   const theme = useTheme();
-
-  const updateParameter = (paramId: number, updatedParam: Parameter) => {
-    setParameters((prev) =>
-      prev.map((param) => (param.id === paramId ? updatedParam : param))
-    );
-  };
-
-  const addParameter = () => {
-    setParameters((prev) => [
-      ...prev,
-      { id: Date.now(), name: "", characteristics: [] },
-    ]);
-  };
-
-  const deleteParameter = (paramId: number) => {
-    setParameters((prev) => prev.filter((param) => param.id !== paramId));
-  };
-
-  const deleteCharacteristic = (paramId: number, charId: number) => {
-    setParameters((prev) =>
-      prev.map((param) =>
-        param.id === paramId
-          ? {
-              ...param,
-              characteristics: param.characteristics.filter(
-                (char) => char.id !== charId
-              ),
-            }
-          : param
-      )
-    );
-  };
-
-  const deletePartition = (
-    paramId: number,
-    charId: number,
-    partId: number
-  ) => {
-    setParameters((prev) =>
-      prev.map((param) =>
-        param.id === paramId
-          ? {
-              ...param,
-              characteristics: param.characteristics.map((char) =>
-                char.id === charId
-                  ? {
-                      ...char,
-                      partitions: char.partitions.filter(
-                        (part) => part.id !== partId
-                      ),
-                    }
-                  : char
-              ),
-            }
-          : param
-      )
-    );
-  };
 
   const copyToMarkdown = () => {
     let markdown = `| Parameter | Characteristic | Partition | Value |\n`;
@@ -93,9 +48,9 @@ const TableBuilder: React.FC = () => {
         }
 
         char.partitions.forEach((part, partIndex) => {
-          markdown += `| ${charIndex === 0 && partIndex === 0 ? param.name : ""} | ${
-            partIndex === 0 ? char.name : ""
-          } | ${part.name} | ${part.value} |\n`;
+          markdown += `| ${
+            charIndex === 0 && partIndex === 0 ? param.name : ""
+          } | ${partIndex === 0 ? char.name : ""} | ${part.name} | ${part.value} |\n`;
         });
       });
     });
@@ -111,12 +66,28 @@ const TableBuilder: React.FC = () => {
   };
 
   return (
-    <Box p={5} h="90vh" display="flex" flexDirection="column" color={theme.colors.text.primary}>
+    <Box
+      p={5}
+      h="90vh"
+      display="flex"
+      flexDirection="column"
+      color={theme.colors.text.primary}
+    >
       <HStack>
-        <Button bg={theme.colors.brand[500]} color={theme.colors.text.primary} onClick={addParameter} mb={3}>
+        <Button
+          bg={theme.colors.brand[500]}
+          color={theme.colors.text.primary}
+          onClick={addParameter}
+          mb={3}
+        >
           Add Parameter
         </Button>
-        <Button bg={theme.colors.brand[500]} color={theme.colors.text.primary} onClick={copyToMarkdown} mb={3}>
+        <Button
+          bg={theme.colors.brand[500]}
+          color={theme.colors.text.primary}
+          onClick={copyToMarkdown}
+          mb={3}
+        >
           Copy Markdown
         </Button>
       </HStack>
@@ -151,7 +122,11 @@ const TableBuilder: React.FC = () => {
                 parameter={param}
                 updateParameter={updateParameter}
                 deleteParameter={deleteParameter}
+                addCharacteristic={addCharacteristic}
+                updateCharacteristic={updateCharacteristic}
                 deleteCharacteristic={deleteCharacteristic}
+                addPartition={addPartition}
+                updatePartition={updatePartition}
                 deletePartition={deletePartition}
               />
             ))}
