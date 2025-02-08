@@ -137,7 +137,7 @@ const TableBuilder: React.FC = () => {
             color={theme.colors.text.primary}
           >
             <Tr>
-              <Th color={theme.colors.text.primary}>Variable</Th>
+              <Th color={theme.colors.text.primary}>Parameter</Th>
               <Th color={theme.colors.text.primary}>Characteristic</Th>
               <Th color={theme.colors.text.primary}>Partition</Th>
               <Th color={theme.colors.text.primary}>Value</Th>
