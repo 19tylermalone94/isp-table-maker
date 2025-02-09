@@ -269,7 +269,7 @@ export const useParameters = () => {
 
   return {
     parameters: state.parameters,
-    setParameters, // 🔥 New function to set the entire parameter list
+    setParameters,
     addParameter,
     updateParameter,
     deleteParameter,

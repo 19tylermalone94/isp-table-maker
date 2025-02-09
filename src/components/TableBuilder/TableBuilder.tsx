@@ -40,6 +40,11 @@ interface BccTestRow {
   characteristicValues: string[];
 }
 
+/**
+ * OracleInput isolates the text box’s internal state.
+ * It uses its own local state (initialized from the passed‑in value)
+ * and only notifies the parent (via onBlur) without causing a re‑render.
+ */
 interface OracleInputProps {
   testName: string;
   initialValue: string;
@@ -93,7 +98,6 @@ const TableBuilder: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [markdownPreview, setMarkdownPreview] = useState('');
   const [isBccPreview, setIsBccPreview] = useState(false);
-  // Use a ref for Oracle values so that updates don’t trigger re‑renders.
   const oracleValuesRef = useRef<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -110,7 +114,11 @@ const TableBuilder: React.FC = () => {
     };
   }, []);
 
-  const generateMarkdown = (): string => {
+  const generateMarkdownPreview = (): string => {
+    const accentColor =
+      theme.colors.accent && theme.colors.accent[500]
+        ? theme.colors.accent[500]
+        : '#d3e7c9';
     let html = `<table>
     <thead>
       <tr>
@@ -156,6 +164,10 @@ const TableBuilder: React.FC = () => {
         } else {
           char.partitions.forEach((part, partIndex) => {
             const partitionCode = `${characteristicLetter}${partIndex + 1}) ${part.name}`;
+            let partitionCellStyle = '';
+            if (part.id === char.basePartitionId) {
+              partitionCellStyle = ` style="background-color: ${accentColor};"`;
+            }
             html += `<tr>
   `;
             if (firstParamRow) {
@@ -168,7 +180,7 @@ const TableBuilder: React.FC = () => {
   `;
               firstCharRow = false;
             }
-            html += `      <td>${partitionCode}</td>
+            html += `      <td${partitionCellStyle}>${partitionCode}</td>
         <td>${part.value}</td>
       </tr>
   `;
@@ -182,7 +194,83 @@ const TableBuilder: React.FC = () => {
     return html;
   };
 
-  // Build an array of BCC test rows.
+  const generateMarkdownCopy = (): string => {
+    const fixedGreen = '#d3e7c9';
+    let html = `<table>
+    <thead>
+      <tr>
+        <th>Parameter</th>
+        <th>Characteristic</th>
+        <th>Partition</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+    let globalCharIndex = 0;
+    parameters.forEach((param) => {
+      let paramRows = 0;
+      if (param.characteristics.length === 0) {
+        paramRows = 1;
+      } else {
+        param.characteristics.forEach((char) => {
+          paramRows += char.partitions.length > 0 ? char.partitions.length : 1;
+        });
+      }
+      let firstParamRow = true;
+      param.characteristics.forEach((char) => {
+        const characteristicLetter = String.fromCharCode(65 + globalCharIndex);
+        globalCharIndex++;
+        const characteristicCode = `${characteristicLetter}) ${char.name}`;
+        let firstCharRow = true;
+        const charRows =
+          char.partitions.length > 0 ? char.partitions.length : 1;
+        if (char.partitions.length === 0) {
+          html += `<tr>
+  `;
+          if (firstParamRow) {
+            html += `      <td rowspan="${paramRows}">${param.name}</td>
+  `;
+            firstParamRow = false;
+          }
+          html += `      <td rowspan="${charRows}">${characteristicCode}</td>
+        <td>-</td>
+        <td>-</td>
+      </tr>
+  `;
+        } else {
+          char.partitions.forEach((part, partIndex) => {
+            const partitionCode = `${characteristicLetter}${partIndex + 1}) ${part.name}`;
+            let partitionCellStyle = '';
+            if (part.id === char.basePartitionId) {
+              partitionCellStyle = ` style="background-color: ${fixedGreen};"`;
+            }
+            html += `<tr>
+  `;
+            if (firstParamRow) {
+              html += `      <td rowspan="${paramRows}">${param.name}</td>
+  `;
+              firstParamRow = false;
+            }
+            if (firstCharRow) {
+              html += `      <td rowspan="${charRows}">${characteristicCode}</td>
+  `;
+              firstCharRow = false;
+            }
+            html += `      <td${partitionCellStyle}>${partitionCode}</td>
+        <td>${part.value}</td>
+      </tr>
+  `;
+          });
+        }
+      });
+    });
+    html += `  </tbody>
+  </table>
+  `;
+    return html;
+  };
+
   const buildBccTestRows = (): BccTestRow[] => {
     const rows: BccTestRow[] = [];
     const globalChars: {
@@ -239,7 +327,6 @@ const TableBuilder: React.FC = () => {
     return rows;
   };
 
-  // Generate BCC markdown using the fixed green color (#d3e7c9)
   const generateBccMarkdownWithOracle = (): string => {
     const rows = buildBccTestRows();
     if (rows.length === 0) return '';
@@ -270,7 +357,7 @@ const TableBuilder: React.FC = () => {
   };
 
   const copyToMarkdown = () => {
-    const markdown = generateMarkdown();
+    const markdown = generateMarkdownCopy();
     navigator.clipboard.writeText(markdown);
     toast({
       title: 'Copied to clipboard',
@@ -306,7 +393,7 @@ const TableBuilder: React.FC = () => {
 
   const previewISP = () => {
     setIsBccPreview(false);
-    const markdown = generateMarkdown();
+    const markdown = generateMarkdownPreview();
     setMarkdownPreview(markdown);
     onOpen();
   };
@@ -360,7 +447,6 @@ const TableBuilder: React.FC = () => {
     reader.readAsText(file);
   };
 
-  // Compute table border color (used for both previews).
   const getTableBorderColor = () => {
     if (theme.colors.neonGreen) return theme.colors.neonGreen;
     if (theme.colors.accent && theme.colors.accent[500])
@@ -376,7 +462,6 @@ const TableBuilder: React.FC = () => {
     oracleValuesRef.current[testName] = value;
   }, []);
 
-  // Interactive BCC table component using the current theme accent for highlighting.
   const BccTableInteractive = React.memo(
     ({
       parameters,
@@ -385,9 +470,7 @@ const TableBuilder: React.FC = () => {
       parameters: Parameter[];
       updateOracleValue: (testName: string, value: string) => void;
     }) => {
-      // Use the theme within this component.
       const localTheme = useTheme();
-      // Recalculate table border color locally.
       const getLocalTableBorderColor = () => {
         if (localTheme.colors.neonGreen) return localTheme.colors.neonGreen;
         if (localTheme.colors.accent && localTheme.colors.accent[500])
@@ -397,7 +480,6 @@ const TableBuilder: React.FC = () => {
         return '#ddd';
       };
       const localTableBorderColor = getLocalTableBorderColor();
-      // Define header style so that it matches the ISP preview.
       const headerStyle = {
         border: `1px solid ${localTableBorderColor}`,
         padding: '8px',
