@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Box,
-  Button,
   Table,
   Thead,
   Tbody,
@@ -16,13 +15,15 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
-  ModalFooter,
   useDisclosure,
 } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ParameterRow from "./ParameterRow";
 import { useParameters } from "../../hooks/useParameters";
+import { FaPlusCircle } from "react-icons/fa";
+import { AddIcon, CloseIcon, CopyIcon, ViewIcon } from "@chakra-ui/icons";
+import ActionButton from "./ActionButton";
 
 const TableBuilder: React.FC = () => {
   const {
@@ -107,30 +108,21 @@ const TableBuilder: React.FC = () => {
         color={theme.colors.text.primary}
       >
         <HStack spacing={3} mb={3}>
-          <Button
-            bg={theme.colors.brand[500]}
-            color={theme.colors.text.primary}
-            _hover={{ bg: theme.colors.brand[600] }}
+          <ActionButton 
+            label="Add Parameter"
+            icon={<AddIcon />}
             onClick={addParameter}
-          >
-            Add Parameter
-          </Button>
-          <Button
-            bg={theme.colors.brand[500]}
-            color={theme.colors.text.primary}
-            _hover={{ bg: theme.colors.brand[600] }}
+          />
+          <ActionButton 
+            label="Copy Markdown"
+            icon={<CopyIcon />}
             onClick={copyToMarkdown}
-          >
-            Copy Markdown
-          </Button>
-          <Button
-            bg={theme.colors.brand[500]}
-            color={theme.colors.text.primary}
-            _hover={{ bg: theme.colors.brand[600] }}
+          />
+          <ActionButton 
+            label="Preview Markdown"
+            icon={<ViewIcon />}
             onClick={previewMarkdown}
-          >
-            Preview Markdown
-          </Button>
+          />
         </HStack>
 
         <Box
@@ -230,16 +222,6 @@ const TableBuilder: React.FC = () => {
               </ReactMarkdown>
             </Box>
           </ModalBody>
-          <ModalFooter bg={theme.colors.background.primary}>
-            <Button
-              bg={theme.colors.brand[500]}
-              color={theme.colors.text.primary}
-              _hover={{ bg: theme.colors.brand[600] }}
-              onClick={onClose}
-            >
-              Close
-            </Button>
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

@@ -1,7 +1,9 @@
 import React from "react";
-import { Tr, Td, Input, Button, useTheme } from "@chakra-ui/react";
+import { Tr, Td, Input, Button, useTheme, HStack } from "@chakra-ui/react";
 import PartitionRow from "./PartitionRow";
 import { Parameter, Characteristic } from "../../types/types";
+import { AddIcon, CloseIcon } from "@chakra-ui/icons";
+import ActionButton from "./ActionButton";
 
 type CharacteristicRowProps = {
   parameter: Parameter;
@@ -64,63 +66,50 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
         <Tr>
           {isFirstCharacteristic && (
             <Td rowSpan={parameterRowSpan} verticalAlign="middle">
-              <Input
-                color={theme.colors.text.primary}
-                value={parameter.name}
-                onChange={handleParameterNameChange}
-              />
-              <Button
-                size="sm"
-                bg={theme.colors.brand[500]}
-                color={theme.colors.text.primary}
-                _hover={{ bg: theme.colors.brand[600] }}
-                onClick={() => addCharacteristic(parameter.id)}
-                mt={2}
-              >
-                Add Characteristic
-              </Button>
-              <Button
-                size="sm"
-                bg={theme.colors.delete[500]}
-                color={theme.colors.text.primary}
-                _hover={{ bg: theme.colors.delete[600] }}
-                onClick={() => deleteParameter(parameter.id)}
-                mt={2}
-                ml={2}
-              >
-                Delete
-              </Button>
+              <HStack>
+                <Input
+                  color={theme.colors.text.primary}
+                  value={parameter.name}
+                  onChange={handleParameterNameChange}
+                />
+                <ActionButton 
+                  label="Add Characteristic"
+                  icon={<AddIcon />}
+                  onClick={() => addCharacteristic(parameter.id)}
+                />
+                <ActionButton 
+                  label="Delete Parameter"
+                  icon={<CloseIcon />}
+                  onClick={() => deleteParameter(parameter.id)}
+                  variant="delete"
+                />
+              </HStack>
             </Td>
           )}
           <Td rowSpan={rowCount} verticalAlign="middle">
-            <Input
-              color={theme.colors.text.primary}
-              value={characteristic.name}
-              onChange={handleCharacteristicNameChange}
-            />
-            <Button
-              size="sm"
-              bg={theme.colors.brand[500]}
-              color={theme.colors.text.primary}
-              _hover={{ bg: theme.colors.brand[600] }}
-              onClick={addPartitionHandler}
-              mt={2}
-            >
-              Add Partition
-            </Button>
-            <Button
-              size="sm"
-              bg={theme.colors.delete[500]}
-              color={theme.colors.text.primary}
-              _hover={{ bg: theme.colors.delete[600] }}
-              onClick={() => deleteCharacteristic(parameter.id, characteristic.id)}
-              mt={2}
-              ml={2}
-            >
-              Delete Characteristic
-            </Button>
+            <HStack>
+              <Input
+                color={theme.colors.text.primary}
+                value={parameter.name}
+                onChange={handleCharacteristicNameChange}
+              />
+              <ActionButton 
+                label="Add Partition"
+                icon={<AddIcon />}
+                onClick={addPartitionHandler}
+              />
+              <ActionButton 
+                label="Delete Characteristic"
+                icon={<CloseIcon />}
+                onClick={() => deleteCharacteristic(parameter.id, characteristic.id)}
+                variant="delete"
+              />
+            </HStack>
           </Td>
           <Td>
+            <HStack>
+              
+            </HStack>
             <Input
               color={theme.colors.text.primary}
               value={firstPartition.name}
@@ -149,17 +138,12 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
             />
           </Td>
           <Td>
-            <Button
-              size="sm"
-              bg={theme.colors.delete[500]}
-              color={theme.colors.text.primary}
-              _hover={{ bg: theme.colors.delete[600] }}
-              onClick={() =>
-                deletePartition(parameter.id, characteristic.id, firstPartition.id)
-              }
-            >
-              Delete
-            </Button>
+            <ActionButton 
+              label="Delete Partition"
+              icon={<CloseIcon />}
+              onClick={() => deletePartition(parameter.id, characteristic.id, firstPartition.id)}
+              variant="delete"
+            />
           </Td>
         </Tr>
         {otherPartitions.map((part) => (
@@ -179,61 +163,45 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
       <Tr>
         {isFirstCharacteristic && (
           <Td rowSpan={parameterRowSpan} verticalAlign="middle">
-            <Input
-              color={theme.colors.text.primary}
-              value={parameter.name}
-              onChange={handleParameterNameChange}
-            />
-            <Button
-              size="sm"
-              bg={theme.colors.brand[500]}
-              color={theme.colors.text.primary}
-              _hover={{ bg: theme.colors.brand[600] }}
-              onClick={() => addCharacteristic(parameter.id)}
-              mt={2}
-            >
-              Add Characteristic
-            </Button>
-            <Button
-              size="sm"
-              bg={theme.colors.delete[500]}
-              color={theme.colors.text.primary}
-              _hover={{ bg: theme.colors.delete[600] }}
-              onClick={() => deleteParameter(parameter.id)}
-              mt={2}
-              ml={2}
-            >
-              Delete
-            </Button>
+            <HStack>
+              <Input
+                color={theme.colors.text.primary}
+                value={parameter.name}
+                onChange={handleParameterNameChange}
+              />
+              <ActionButton 
+                label="Add Characteristic"
+                icon={<AddIcon />}
+                onClick={() => addCharacteristic(parameter.id)}
+              />
+              <ActionButton 
+                label="Delete Parameter"
+                icon={<CloseIcon />}
+                onClick={() => deleteParameter(parameter.id)}
+                variant="delete"
+              />
+            </HStack>
           </Td>
         )}
         <Td>
-          <Input
-            color={theme.colors.text.primary}
-            value={characteristic.name}
-            onChange={handleCharacteristicNameChange}
-          />
-          <Button
-            size="sm"
-            bg={theme.colors.brand[500]}
-            color={theme.colors.text.primary}
-            _hover={{ bg: theme.colors.brand[600] }}
-            onClick={addPartitionHandler}
-            mt={2}
-          >
-            Add Partition
-          </Button>
-          <Button
-            size="sm"
-            bg={theme.colors.delete[500]}
-            color={theme.colors.text.primary}
-            _hover={{ bg: theme.colors.delete[600] }}
-            onClick={() => deleteCharacteristic(parameter.id, characteristic.id)}
-            mt={2}
-            ml={2}
-          >
-            Delete Characteristic
-          </Button>
+          <HStack>
+            <Input
+              color={theme.colors.text.primary}
+              value={characteristic.name}
+              onChange={handleCharacteristicNameChange}
+            />
+            <ActionButton 
+              label="Add Partition"
+              icon={<AddIcon />}
+              onClick={addPartitionHandler}
+            />
+            <ActionButton 
+              label="Delete Characteristic"
+              icon={<CloseIcon />}
+              onClick={() => deleteCharacteristic(parameter.id, characteristic.id)}
+              variant="delete"
+            />
+          </HStack>
         </Td>
         <Td>-</Td>
         <Td>-</Td>

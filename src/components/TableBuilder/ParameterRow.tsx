@@ -1,7 +1,9 @@
 import React from "react";
-import { Tr, Td, Input, Button, useTheme } from "@chakra-ui/react";
+import { Tr, Td, Input, Button, useTheme, HStack } from "@chakra-ui/react";
 import CharacteristicRow from "./CharacteristicRow";
 import { Parameter } from "../../types/types";
+import { AddIcon, CloseIcon } from "@chakra-ui/icons";
+import ActionButton from "./ActionButton";
 
 type ParameterRowProps = {
   parameter: Parameter;
@@ -50,31 +52,24 @@ const ParameterRow: React.FC<ParameterRowProps> = ({
     return (
       <Tr>
         <Td rowSpan={1} verticalAlign="middle">
-          <Input
-            color={theme.colors.text.primary}
-            value={parameter.name}
-            onChange={(e) => updateParameter(parameter.id, { name: e.target.value })}
-          />
-          <Button
-            size="sm"
-            bg={theme.colors.brand[500]}
-            color={theme.colors.text.primary}
-            _hover={{ bg: theme.colors.brand[600] }}
-            onClick={() => addCharacteristic(parameter.id)}
-            mt={2}
-          >
-            Add Characteristic
-          </Button>
-          <Button
-            size="sm"
-            bg={theme.colors.delete[500]}
-            color={theme.colors.text.primary}
-            _hover={{ bg: theme.colors.delete[600] }}
-            onClick={() => deleteParameter(parameter.id)}
-            ml={2}
-          >
-            Delete
-          </Button>
+          <HStack>
+            <Input
+              color={theme.colors.text.primary}
+              value={parameter.name}
+              onChange={(e) => updateParameter(parameter.id, { name: e.target.value })}
+            />
+            <ActionButton 
+              label="Add Characteristic"
+              icon={<AddIcon />}
+              onClick={() => addCharacteristic(parameter.id)}
+            />
+            <ActionButton 
+              label="Delete Parameter"
+              icon={<CloseIcon />}
+              onClick={() => deleteParameter(parameter.id)}
+              variant="delete"
+            />
+          </HStack>
         </Td>
         <Td colSpan={3} textAlign="center" color={theme.colors.text.primary}>
           No characteristics added
