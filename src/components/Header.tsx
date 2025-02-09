@@ -12,12 +12,9 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme }) => {
   return (
     <Box as="header" bg={theme.colors.brand[600]} px={6} py={4} boxShadow="md">
       <Flex align="center">
-        <HStack>
-          <FaFlask />
-          <Text mt={1} fontSize="xl" fontWeight="bold" color={theme.colors.text.primary}>
-            ISP Table Maker
-          </Text>
-        </HStack>
+        <Text fontSize="xl" fontWeight="bold" color={theme.colors.text.primary}>
+          ISP Table Maker
+        </Text>
         <Spacer />
         <Link 
           href="https://github.com/19tylermalone94/isp-table-maker" 
