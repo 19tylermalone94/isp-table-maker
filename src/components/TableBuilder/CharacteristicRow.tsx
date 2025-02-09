@@ -1,9 +1,9 @@
-import React from "react";
-import { Tr, Td, Input, Button, useTheme, HStack } from "@chakra-ui/react";
-import PartitionRow from "./PartitionRow";
-import { Parameter, Characteristic } from "../../types/types";
-import { AddIcon, CloseIcon } from "@chakra-ui/icons";
-import ActionButton from "./ActionButton";
+import React from 'react';
+import { Tr, Td, Input, Button, useTheme, HStack } from '@chakra-ui/react';
+import PartitionRow from './PartitionRow';
+import { Parameter, Characteristic } from '../../types/types';
+import { AddIcon, CloseIcon } from '@chakra-ui/icons';
+import ActionButton from './ActionButton';
 
 type CharacteristicRowProps = {
   parameter: Parameter;
@@ -14,7 +14,7 @@ type CharacteristicRowProps = {
   updateCharacteristic: (
     parameterId: number,
     characteristicId: number,
-    updated: Partial<Characteristic>
+    updated: Partial<Characteristic>,
   ) => void;
   deleteCharacteristic: (parameterId: number, characteristicId: number) => void;
   addPartition: (parameterId: number, characteristicId: number) => void;
@@ -22,9 +22,13 @@ type CharacteristicRowProps = {
     parameterId: number,
     characteristicId: number,
     partitionId: number,
-    updated: Partial<any>
+    updated: Partial<any>,
   ) => void;
-  deletePartition: (parameterId: number, characteristicId: number, partitionId: number) => void;
+  deletePartition: (
+    parameterId: number,
+    characteristicId: number,
+    partitionId: number,
+  ) => void;
   isFirstCharacteristic: boolean;
   parameterRowSpan: number;
 };
@@ -49,15 +53,22 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
     addPartition(parameter.id, characteristic.id);
   };
 
-  const handleCharacteristicNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateCharacteristic(parameter.id, characteristic.id, { name: e.target.value });
+  const handleCharacteristicNameChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    updateCharacteristic(parameter.id, characteristic.id, {
+      name: e.target.value,
+    });
   };
 
-  const handleParameterNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleParameterNameChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     updateParameter(parameter.id, { name: e.target.value });
   };
 
-  const rowCount = characteristic.partitions.length > 0 ? characteristic.partitions.length : 1;
+  const rowCount =
+    characteristic.partitions.length > 0 ? characteristic.partitions.length : 1;
 
   if (characteristic.partitions.length > 0) {
     const [firstPartition, ...otherPartitions] = characteristic.partitions;
@@ -72,12 +83,12 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
                   value={parameter.name}
                   onChange={handleParameterNameChange}
                 />
-                <ActionButton 
+                <ActionButton
                   label="Add Characteristic"
                   icon={<AddIcon />}
                   onClick={() => addCharacteristic(parameter.id)}
                 />
-                <ActionButton 
+                <ActionButton
                   label="Delete Parameter"
                   icon={<CloseIcon />}
                   onClick={() => deleteParameter(parameter.id)}
@@ -93,23 +104,23 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
                 value={characteristic.name}
                 onChange={handleCharacteristicNameChange}
               />
-              <ActionButton 
+              <ActionButton
                 label="Add Partition"
                 icon={<AddIcon />}
                 onClick={addPartitionHandler}
               />
-              <ActionButton 
+              <ActionButton
                 label="Delete Characteristic"
                 icon={<CloseIcon />}
-                onClick={() => deleteCharacteristic(parameter.id, characteristic.id)}
+                onClick={() =>
+                  deleteCharacteristic(parameter.id, characteristic.id)
+                }
                 variant="delete"
               />
             </HStack>
           </Td>
           <Td>
-            <HStack>
-              
-            </HStack>
+            <HStack></HStack>
             <Input
               color={theme.colors.text.primary}
               value={firstPartition.name}
@@ -118,7 +129,7 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
                   parameter.id,
                   characteristic.id,
                   firstPartition.id,
-                  { name: e.target.value }
+                  { name: e.target.value },
                 )
               }
             />
@@ -132,16 +143,22 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
                   parameter.id,
                   characteristic.id,
                   firstPartition.id,
-                  { value: e.target.value }
+                  { value: e.target.value },
                 )
               }
             />
           </Td>
           <Td>
-            <ActionButton 
+            <ActionButton
               label="Delete Partition"
               icon={<CloseIcon />}
-              onClick={() => deletePartition(parameter.id, characteristic.id, firstPartition.id)}
+              onClick={() =>
+                deletePartition(
+                  parameter.id,
+                  characteristic.id,
+                  firstPartition.id,
+                )
+              }
               variant="delete"
             />
           </Td>
@@ -169,12 +186,12 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
                 value={parameter.name}
                 onChange={handleParameterNameChange}
               />
-              <ActionButton 
+              <ActionButton
                 label="Add Characteristic"
                 icon={<AddIcon />}
                 onClick={() => addCharacteristic(parameter.id)}
               />
-              <ActionButton 
+              <ActionButton
                 label="Delete Parameter"
                 icon={<CloseIcon />}
                 onClick={() => deleteParameter(parameter.id)}
@@ -190,15 +207,17 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
               value={characteristic.name}
               onChange={handleCharacteristicNameChange}
             />
-            <ActionButton 
+            <ActionButton
               label="Add Partition"
               icon={<AddIcon />}
               onClick={addPartitionHandler}
             />
-            <ActionButton 
+            <ActionButton
               label="Delete Characteristic"
               icon={<CloseIcon />}
-              onClick={() => deleteCharacteristic(parameter.id, characteristic.id)}
+              onClick={() =>
+                deleteCharacteristic(parameter.id, characteristic.id)
+              }
               variant="delete"
             />
           </HStack>

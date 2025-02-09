@@ -1,9 +1,9 @@
-import React from "react";
-import { Tr, Td, Input, Button, useTheme, HStack } from "@chakra-ui/react";
-import CharacteristicRow from "./CharacteristicRow";
-import { Parameter } from "../../types/types";
-import { AddIcon, CloseIcon } from "@chakra-ui/icons";
-import ActionButton from "./ActionButton";
+import React from 'react';
+import { Tr, Td, Input, Button, useTheme, HStack } from '@chakra-ui/react';
+import CharacteristicRow from './CharacteristicRow';
+import { Parameter } from '../../types/types';
+import { AddIcon, CloseIcon } from '@chakra-ui/icons';
+import ActionButton from './ActionButton';
 
 type ParameterRowProps = {
   parameter: Parameter;
@@ -13,7 +13,7 @@ type ParameterRowProps = {
   updateCharacteristic: (
     parameterId: number,
     characteristicId: number,
-    updated: Partial<any>
+    updated: Partial<any>,
   ) => void;
   deleteCharacteristic: (parameterId: number, characteristicId: number) => void;
   addPartition: (parameterId: number, characteristicId: number) => void;
@@ -21,9 +21,13 @@ type ParameterRowProps = {
     parameterId: number,
     characteristicId: number,
     partitionId: number,
-    updated: Partial<any>
+    updated: Partial<any>,
   ) => void;
-  deletePartition: (parameterId: number, characteristicId: number, partitionId: number) => void;
+  deletePartition: (
+    parameterId: number,
+    characteristicId: number,
+    partitionId: number,
+  ) => void;
 };
 
 const ParameterRow: React.FC<ParameterRowProps> = ({
@@ -56,14 +60,16 @@ const ParameterRow: React.FC<ParameterRowProps> = ({
             <Input
               color={theme.colors.text.primary}
               value={parameter.name}
-              onChange={(e) => updateParameter(parameter.id, { name: e.target.value })}
+              onChange={(e) =>
+                updateParameter(parameter.id, { name: e.target.value })
+              }
             />
-            <ActionButton 
+            <ActionButton
               label="Add Characteristic"
               icon={<AddIcon />}
               onClick={() => addCharacteristic(parameter.id)}
             />
-            <ActionButton 
+            <ActionButton
               label="Delete Parameter"
               icon={<CloseIcon />}
               onClick={() => deleteParameter(parameter.id)}

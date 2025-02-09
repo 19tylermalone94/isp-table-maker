@@ -1,20 +1,51 @@
-import { useReducer } from "react";
-import { Parameter, Characteristic, Partition } from "../types/types";
+import { useReducer } from 'react';
+import { Parameter, Characteristic, Partition } from '../types/types';
 
 type State = {
   parameters: Parameter[];
 };
 
 type Action =
-  | { type: "ADD_PARAMETER" }
-  | { type: "UPDATE_PARAMETER"; payload: { id: number; updated: Partial<Parameter> } }
-  | { type: "DELETE_PARAMETER"; payload: { id: number } }
-  | { type: "ADD_CHARACTERISTIC"; payload: { parameterId: number } }
-  | { type: "UPDATE_CHARACTERISTIC"; payload: { parameterId: number; characteristicId: number; updated: Partial<Characteristic> } }
-  | { type: "DELETE_CHARACTERISTIC"; payload: { parameterId: number; characteristicId: number } }
-  | { type: "ADD_PARTITION"; payload: { parameterId: number; characteristicId: number } }
-  | { type: "UPDATE_PARTITION"; payload: { parameterId: number; characteristicId: number; partitionId: number; updated: Partial<Partition> } }
-  | { type: "DELETE_PARTITION"; payload: { parameterId: number; characteristicId: number; partitionId: number } };
+  | { type: 'ADD_PARAMETER' }
+  | {
+      type: 'UPDATE_PARAMETER';
+      payload: { id: number; updated: Partial<Parameter> };
+    }
+  | { type: 'DELETE_PARAMETER'; payload: { id: number } }
+  | { type: 'ADD_CHARACTERISTIC'; payload: { parameterId: number } }
+  | {
+      type: 'UPDATE_CHARACTERISTIC';
+      payload: {
+        parameterId: number;
+        characteristicId: number;
+        updated: Partial<Characteristic>;
+      };
+    }
+  | {
+      type: 'DELETE_CHARACTERISTIC';
+      payload: { parameterId: number; characteristicId: number };
+    }
+  | {
+      type: 'ADD_PARTITION';
+      payload: { parameterId: number; characteristicId: number };
+    }
+  | {
+      type: 'UPDATE_PARTITION';
+      payload: {
+        parameterId: number;
+        characteristicId: number;
+        partitionId: number;
+        updated: Partial<Partition>;
+      };
+    }
+  | {
+      type: 'DELETE_PARTITION';
+      payload: {
+        parameterId: number;
+        characteristicId: number;
+        partitionId: number;
+      };
+    };
 
 const initialState: State = {
   parameters: [],
@@ -22,144 +53,149 @@ const initialState: State = {
 
 function parametersReducer(state: State, action: Action): State {
   switch (action.type) {
-    case "ADD_PARAMETER": {
+    case 'ADD_PARAMETER': {
       const newParameter: Parameter = {
         id: Date.now(),
-        name: "",
+        name: '',
         characteristics: [],
       };
       return { ...state, parameters: [...state.parameters, newParameter] };
     }
-    case "UPDATE_PARAMETER": {
+    case 'UPDATE_PARAMETER': {
       const { id, updated } = action.payload;
       return {
         ...state,
-        parameters: state.parameters.map(param =>
-          param.id === id ? { ...param, ...updated } : param
+        parameters: state.parameters.map((param) =>
+          param.id === id ? { ...param, ...updated } : param,
         ),
       };
     }
-    case "DELETE_PARAMETER": {
+    case 'DELETE_PARAMETER': {
       const { id } = action.payload;
       return {
         ...state,
-        parameters: state.parameters.filter(param => param.id !== id),
+        parameters: state.parameters.filter((param) => param.id !== id),
       };
     }
-    case "ADD_CHARACTERISTIC": {
+    case 'ADD_CHARACTERISTIC': {
       const { parameterId } = action.payload;
       return {
         ...state,
-        parameters: state.parameters.map(param =>
+        parameters: state.parameters.map((param) =>
           param.id === parameterId
             ? {
                 ...param,
                 characteristics: [
                   ...param.characteristics,
-                  { id: Date.now(), name: "", partitions: [] },
+                  { id: Date.now(), name: '', partitions: [] },
                 ],
               }
-            : param
+            : param,
         ),
       };
     }
-    case "UPDATE_CHARACTERISTIC": {
+    case 'UPDATE_CHARACTERISTIC': {
       const { parameterId, characteristicId, updated } = action.payload;
       return {
         ...state,
-        parameters: state.parameters.map(param =>
+        parameters: state.parameters.map((param) =>
           param.id === parameterId
             ? {
                 ...param,
-                characteristics: param.characteristics.map(char =>
-                  char.id === characteristicId ? { ...char, ...updated } : char
+                characteristics: param.characteristics.map((char) =>
+                  char.id === characteristicId ? { ...char, ...updated } : char,
                 ),
               }
-            : param
+            : param,
         ),
       };
     }
-    case "DELETE_CHARACTERISTIC": {
+    case 'DELETE_CHARACTERISTIC': {
       const { parameterId, characteristicId } = action.payload;
       return {
         ...state,
-        parameters: state.parameters.map(param =>
+        parameters: state.parameters.map((param) =>
           param.id === parameterId
             ? {
                 ...param,
                 characteristics: param.characteristics.filter(
-                  char => char.id !== characteristicId
+                  (char) => char.id !== characteristicId,
                 ),
               }
-            : param
+            : param,
         ),
       };
     }
-    case "ADD_PARTITION": {
+    case 'ADD_PARTITION': {
       const { parameterId, characteristicId } = action.payload;
       return {
         ...state,
-        parameters: state.parameters.map(param =>
+        parameters: state.parameters.map((param) =>
           param.id === parameterId
             ? {
                 ...param,
-                characteristics: param.characteristics.map(char =>
+                characteristics: param.characteristics.map((char) =>
                   char.id === characteristicId
                     ? {
                         ...char,
                         partitions: [
                           ...char.partitions,
-                          { id: Date.now(), name: "", value: "" },
+                          { id: Date.now(), name: '', value: '' },
                         ],
                       }
-                    : char
+                    : char,
                 ),
               }
-            : param
+            : param,
         ),
       };
     }
-    case "UPDATE_PARTITION": {
-      const { parameterId, characteristicId, partitionId, updated } = action.payload;
+    case 'UPDATE_PARTITION': {
+      const { parameterId, characteristicId, partitionId, updated } =
+        action.payload;
       return {
         ...state,
-        parameters: state.parameters.map(param =>
+        parameters: state.parameters.map((param) =>
           param.id === parameterId
             ? {
                 ...param,
-                characteristics: param.characteristics.map(char =>
+                characteristics: param.characteristics.map((char) =>
                   char.id === characteristicId
                     ? {
                         ...char,
-                        partitions: char.partitions.map(part =>
-                          part.id === partitionId ? { ...part, ...updated } : part
+                        partitions: char.partitions.map((part) =>
+                          part.id === partitionId
+                            ? { ...part, ...updated }
+                            : part,
                         ),
                       }
-                    : char
+                    : char,
                 ),
               }
-            : param
+            : param,
         ),
       };
     }
-    case "DELETE_PARTITION": {
+    case 'DELETE_PARTITION': {
       const { parameterId, characteristicId, partitionId } = action.payload;
       return {
         ...state,
-        parameters: state.parameters.map(param =>
+        parameters: state.parameters.map((param) =>
           param.id === parameterId
             ? {
                 ...param,
-                characteristics: param.characteristics.map(char =>
+                characteristics: param.characteristics.map((char) =>
                   char.id === characteristicId
                     ? {
                         ...char,
-                        partitions: char.partitions.filter(part => part.id !== partitionId),
+                        partitions: char.partitions.filter(
+                          (part) => part.id !== partitionId,
+                        ),
                       }
-                    : char
+                    : char,
                 ),
               }
-            : param
+            : param,
         ),
       };
     }
@@ -171,42 +207,52 @@ function parametersReducer(state: State, action: Action): State {
 export const useParameters = () => {
   const [state, dispatch] = useReducer(parametersReducer, initialState);
 
-  const addParameter = () => dispatch({ type: "ADD_PARAMETER" });
+  const addParameter = () => dispatch({ type: 'ADD_PARAMETER' });
   const updateParameter = (id: number, updated: Partial<Parameter>) =>
-    dispatch({ type: "UPDATE_PARAMETER", payload: { id, updated } });
+    dispatch({ type: 'UPDATE_PARAMETER', payload: { id, updated } });
   const deleteParameter = (id: number) =>
-    dispatch({ type: "DELETE_PARAMETER", payload: { id } });
+    dispatch({ type: 'DELETE_PARAMETER', payload: { id } });
   const addCharacteristic = (parameterId: number) =>
-    dispatch({ type: "ADD_CHARACTERISTIC", payload: { parameterId } });
+    dispatch({ type: 'ADD_CHARACTERISTIC', payload: { parameterId } });
   const updateCharacteristic = (
     parameterId: number,
     characteristicId: number,
-    updated: Partial<Characteristic>
+    updated: Partial<Characteristic>,
   ) =>
     dispatch({
-      type: "UPDATE_CHARACTERISTIC",
+      type: 'UPDATE_CHARACTERISTIC',
       payload: { parameterId, characteristicId, updated },
     });
-  const deleteCharacteristic = (parameterId: number, characteristicId: number) =>
+  const deleteCharacteristic = (
+    parameterId: number,
+    characteristicId: number,
+  ) =>
     dispatch({
-      type: "DELETE_CHARACTERISTIC",
+      type: 'DELETE_CHARACTERISTIC',
       payload: { parameterId, characteristicId },
     });
   const addPartition = (parameterId: number, characteristicId: number) =>
-    dispatch({ type: "ADD_PARTITION", payload: { parameterId, characteristicId } });
+    dispatch({
+      type: 'ADD_PARTITION',
+      payload: { parameterId, characteristicId },
+    });
   const updatePartition = (
     parameterId: number,
     characteristicId: number,
     partitionId: number,
-    updated: Partial<Partition>
+    updated: Partial<Partition>,
   ) =>
     dispatch({
-      type: "UPDATE_PARTITION",
+      type: 'UPDATE_PARTITION',
       payload: { parameterId, characteristicId, partitionId, updated },
     });
-  const deletePartition = (parameterId: number, characteristicId: number, partitionId: number) =>
+  const deletePartition = (
+    parameterId: number,
+    characteristicId: number,
+    partitionId: number,
+  ) =>
     dispatch({
-      type: "DELETE_PARTITION",
+      type: 'DELETE_PARTITION',
       payload: { parameterId, characteristicId, partitionId },
     });
 

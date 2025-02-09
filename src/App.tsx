@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { ChakraProvider } from "@chakra-ui/react";
-import Header from "./components/Header";
-import TableBuilder from "./components/TableBuilder/TableBuilder";
-import { slateBlueTheme, darkTheme, cyberpunkTheme } from "./themes"; // Import themes
+import React, { useState } from 'react';
+import { ChakraProvider } from '@chakra-ui/react';
+import Header from './components/Header';
+import TableBuilder from './components/TableBuilder/TableBuilder';
+import { slateBlueTheme, darkTheme, cyberpunkTheme } from './themes'; // Import themes
 
 const themes = [slateBlueTheme, darkTheme, cyberpunkTheme];
 

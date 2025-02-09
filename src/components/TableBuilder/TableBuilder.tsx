@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Box,
   Table,
@@ -16,14 +16,14 @@ import {
   ModalCloseButton,
   ModalBody,
   useDisclosure,
-} from "@chakra-ui/react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import ParameterRow from "./ParameterRow";
-import { useParameters } from "../../hooks/useParameters";
-import { FaPlusCircle } from "react-icons/fa";
-import { AddIcon, CloseIcon, CopyIcon, ViewIcon } from "@chakra-ui/icons";
-import ActionButton from "./ActionButton";
+} from '@chakra-ui/react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import ParameterRow from './ParameterRow';
+import { useParameters } from '../../hooks/useParameters';
+import { FaPlusCircle } from 'react-icons/fa';
+import { AddIcon, CloseIcon, CopyIcon, ViewIcon } from '@chakra-ui/icons';
+import ActionButton from './ActionButton';
 
 const TableBuilder: React.FC = () => {
   const {
@@ -42,7 +42,7 @@ const TableBuilder: React.FC = () => {
   const toast = useToast();
   const theme = useTheme();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [markdownPreview, setMarkdownPreview] = useState("");
+  const [markdownPreview, setMarkdownPreview] = useState('');
 
   const generateMarkdown = (): string => {
     let markdown = `| Parameter | Characteristic | Partition | Value |\n`;
@@ -56,13 +56,13 @@ const TableBuilder: React.FC = () => {
 
       param.characteristics.forEach((char, charIndex) => {
         if (char.partitions.length === 0) {
-          markdown += `| ${charIndex === 0 ? param.name : ""} | ${char.name} | - | - |\n`;
+          markdown += `| ${charIndex === 0 ? param.name : ''} | ${char.name} | - | - |\n`;
           return;
         }
 
         char.partitions.forEach((part, partIndex) => {
-          markdown += `| ${charIndex === 0 && partIndex === 0 ? param.name : ""} | ${
-            partIndex === 0 ? char.name : ""
+          markdown += `| ${charIndex === 0 && partIndex === 0 ? param.name : ''} | ${
+            partIndex === 0 ? char.name : ''
           } | ${part.name} | ${part.value} |\n`;
         });
       });
@@ -75,9 +75,9 @@ const TableBuilder: React.FC = () => {
     const markdown = generateMarkdown();
     navigator.clipboard.writeText(markdown);
     toast({
-      title: "Copied to clipboard",
-      description: "Markdown table copied!",
-      status: "success",
+      title: 'Copied to clipboard',
+      description: 'Markdown table copied!',
+      status: 'success',
       duration: 2000,
       isClosable: true,
     });
@@ -91,9 +91,11 @@ const TableBuilder: React.FC = () => {
 
   const getTableBorderColor = () => {
     if (theme.colors.neonGreen) return theme.colors.neonGreen;
-    if (theme.colors.accent && theme.colors.accent[500]) return theme.colors.accent[500];
-    if (theme.colors.brand && theme.colors.brand[500]) return theme.colors.brand[500];
-    return "#ddd";
+    if (theme.colors.accent && theme.colors.accent[500])
+      return theme.colors.accent[500];
+    if (theme.colors.brand && theme.colors.brand[500])
+      return theme.colors.brand[500];
+    return '#ddd';
   };
 
   const tableBorderColor = getTableBorderColor();
@@ -108,17 +110,17 @@ const TableBuilder: React.FC = () => {
         color={theme.colors.text.primary}
       >
         <HStack spacing={3} mb={3}>
-          <ActionButton 
+          <ActionButton
             label="Add Parameter"
             icon={<AddIcon />}
             onClick={addParameter}
           />
-          <ActionButton 
+          <ActionButton
             label="Copy Markdown"
             icon={<CopyIcon />}
             onClick={copyToMarkdown}
           />
-          <ActionButton 
+          <ActionButton
             label="Preview Markdown"
             icon={<ViewIcon />}
             onClick={previewMarkdown}
@@ -168,7 +170,6 @@ const TableBuilder: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Markdown Preview Modal */}
       <Modal isOpen={isOpen} onClose={onClose} size="lg">
         <ModalOverlay />
         <ModalContent bg={theme.colors.background.primary}>
@@ -187,9 +188,9 @@ const TableBuilder: React.FC = () => {
                   table: ({ node, ...props }) => (
                     <table
                       style={{
-                        borderCollapse: "collapse",
-                        width: "100%",
-                        marginBottom: "1em",
+                        borderCollapse: 'collapse',
+                        width: '100%',
+                        marginBottom: '1em',
                       }}
                       {...props}
                     />
@@ -198,9 +199,9 @@ const TableBuilder: React.FC = () => {
                     <th
                       style={{
                         border: `1px solid ${tableBorderColor}`,
-                        padding: "8px",
+                        padding: '8px',
                         backgroundColor:
-                          theme.colors.background.secondary || "#f2f2f2",
+                          theme.colors.background.secondary || '#f2f2f2',
                         color: theme.colors.text.primary,
                       }}
                       {...props}
@@ -210,7 +211,7 @@ const TableBuilder: React.FC = () => {
                     <td
                       style={{
                         border: `1px solid ${tableBorderColor}`,
-                        padding: "8px",
+                        padding: '8px',
                         color: theme.colors.text.primary,
                       }}
                       {...props}

@@ -1,6 +1,16 @@
-import { Box, Flex, IconButton, Text, Spacer, useTheme, Link, HStack } from "@chakra-ui/react";
-import { MoonIcon } from "@chakra-ui/icons";
-import { FaFlask, FaGithub } from "react-icons/fa";
+import {
+  Box,
+  Flex,
+  IconButton,
+  Text,
+  Spacer,
+  useTheme,
+  Link,
+  HStack,
+} from '@chakra-ui/react';
+import { MoonIcon } from '@chakra-ui/icons';
+import { FaFlask, FaGithub } from 'react-icons/fa';
+import ActionButton from './TableBuilder/ActionButton';
 
 type HeaderProps = {
   toggleTheme: () => void;
@@ -8,34 +18,30 @@ type HeaderProps = {
 
 const Header: React.FC<HeaderProps> = ({ toggleTheme }) => {
   const theme = useTheme();
-  
+
   return (
-    <Box as="header" bg={theme.colors.brand[600]} px={6} py={4} boxShadow="md">
+    <Box as="header" bg={theme.colors.brand[500]} px={6} py={4} boxShadow="md">
       <Flex align="center">
         <Text fontSize="xl" fontWeight="bold" color={theme.colors.text.primary}>
           ISP Table Maker
         </Text>
         <Spacer />
-        <Link 
-          href="https://github.com/19tylermalone94/isp-table-maker" 
+        <Link
+          href="https://github.com/19tylermalone94/isp-table-maker"
           isExternal
           aria-label="GitHub Repository"
           mx={4}
         >
-          <IconButton
+          <ActionButton
+            label={'View Source'}
             icon={<FaGithub />}
-            aria-label="GitHub Repository"
-            bg="transparent"
-            color={theme.colors.text.primary}
-            _hover={{ bg: theme.colors.brand[500] }}
+            onClick={() => {}}
           />
         </Link>
-        <IconButton
-          aria-label="Cycle themes"
-          icon={<MoonIcon color={theme.colors.text.primary} fontSize="lg" />}
+        <ActionButton
+          label={'Toggle Theme'}
+          icon={<MoonIcon />}
           onClick={toggleTheme}
-          bg="transparent"
-          _hover={{ bg: theme.colors.brand[500] }}
         />
       </Flex>
     </Box>

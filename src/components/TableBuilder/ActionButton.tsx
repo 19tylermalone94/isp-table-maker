@@ -1,23 +1,23 @@
-import { ViewIcon } from "@chakra-ui/icons";
-import { Tooltip, IconButton, theme, useTheme } from "@chakra-ui/react";
-import { ReactElement } from "react";
-import { IconType } from "react-icons";
+import { ViewIcon } from '@chakra-ui/icons';
+import { Tooltip, IconButton, theme, useTheme } from '@chakra-ui/react';
+import { ReactElement } from 'react';
+import { IconType } from 'react-icons';
 
 type ActionButtonProps = {
   label: string;
   icon: ReactElement;
-  onClick: () => void;
-  variant?: "default" | "delete";
+  onClick?: () => void;
+  variant?: 'default' | 'delete';
 };
 
 const ActionButton: React.FC<ActionButtonProps> = ({
   label,
   icon,
   onClick,
-  variant = "default"
+  variant = 'default',
 }) => {
   const theme = useTheme();
-  const color = (variant === "delete") ? theme.colors.delete : theme.colors.brand;
+  const color = variant === 'delete' ? theme.colors.delete : theme.colors.brand;
 
   return (
     <Tooltip label={label} placement="top-start">
@@ -26,11 +26,11 @@ const ActionButton: React.FC<ActionButtonProps> = ({
         aria-label={label}
         color={theme.colors.text.primary}
         bg={color[500]}
-        _hover={{ bg: color[600]}}
+        _hover={{ bg: color[600] }}
         onClick={onClick}
       />
     </Tooltip>
-  )
+  );
 };
 
 export default ActionButton;
