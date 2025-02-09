@@ -1,15 +1,6 @@
-import {
-  Box,
-  Flex,
-  IconButton,
-  Text,
-  Spacer,
-  useTheme,
-  Link,
-  HStack,
-} from '@chakra-ui/react';
+import { Box, Flex, Text, Spacer, useTheme, Link } from '@chakra-ui/react';
 import { MoonIcon } from '@chakra-ui/icons';
-import { FaFlask, FaGithub } from 'react-icons/fa';
+import { FaGithub } from 'react-icons/fa';
 import ActionButton from './TableBuilder/ActionButton';
 
 type HeaderProps = {
@@ -32,11 +23,7 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme }) => {
           aria-label="GitHub Repository"
           mx={4}
         >
-          <ActionButton
-            label={'View Source'}
-            icon={<FaGithub />}
-            onClick={() => {}}
-          />
+          <ActionButton label={'View Source'} icon={<FaGithub />} />
         </Link>
         <ActionButton
           label={'Toggle Theme'}

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Tr, Td, Input, Button, useTheme, HStack } from '@chakra-ui/react';
+import { Tr, Td, Input, useTheme, HStack } from '@chakra-ui/react';
 import CharacteristicRow from './CharacteristicRow';
-import { Parameter } from '../../types/types';
+import { Characteristic, Parameter, Partition } from '../../types/types';
 import { AddIcon, CloseIcon } from '@chakra-ui/icons';
 import ActionButton from './ActionButton';
 
@@ -13,7 +13,7 @@ type ParameterRowProps = {
   updateCharacteristic: (
     parameterId: number,
     characteristicId: number,
-    updated: Partial<any>,
+    updated: Partial<Characteristic>,
   ) => void;
   deleteCharacteristic: (parameterId: number, characteristicId: number) => void;
   addPartition: (parameterId: number, characteristicId: number) => void;
@@ -21,7 +21,7 @@ type ParameterRowProps = {
     parameterId: number,
     characteristicId: number,
     partitionId: number,
-    updated: Partial<any>,
+    updated: Partial<Partition>,
   ) => void;
   deletePartition: (
     parameterId: number,

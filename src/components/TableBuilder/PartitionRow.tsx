@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tr, Td, Input, Button, useTheme } from '@chakra-ui/react';
+import { Tr, Td, Input, useTheme } from '@chakra-ui/react';
 import { Characteristic, Parameter, Partition } from '../../types/types';
 import { CloseIcon } from '@chakra-ui/icons';
 import ActionButton from './ActionButton';

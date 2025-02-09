@@ -1,7 +1,5 @@
-import { ViewIcon } from '@chakra-ui/icons';
-import { Tooltip, IconButton, theme, useTheme } from '@chakra-ui/react';
+import { Tooltip, IconButton, useTheme } from '@chakra-ui/react';
 import { ReactElement } from 'react';
-import { IconType } from 'react-icons';
 
 type ActionButtonProps = {
   label: string;

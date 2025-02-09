@@ -21,8 +21,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ParameterRow from './ParameterRow';
 import { useParameters } from '../../hooks/useParameters';
-import { FaPlusCircle } from 'react-icons/fa';
-import { AddIcon, CloseIcon, CopyIcon, ViewIcon } from '@chakra-ui/icons';
+import { AddIcon, CopyIcon, ViewIcon } from '@chakra-ui/icons';
 import ActionButton from './ActionButton';
 
 const TableBuilder: React.FC = () => {
@@ -185,7 +184,7 @@ const TableBuilder: React.FC = () => {
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
-                  table: ({ node, ...props }) => (
+                  table: ({ ...props }) => (
                     <table
                       style={{
                         borderCollapse: 'collapse',
@@ -195,7 +194,7 @@ const TableBuilder: React.FC = () => {
                       {...props}
                     />
                   ),
-                  th: ({ node, ...props }) => (
+                  th: ({ ...props }) => (
                     <th
                       style={{
                         border: `1px solid ${tableBorderColor}`,
@@ -207,7 +206,7 @@ const TableBuilder: React.FC = () => {
                       {...props}
                     />
                   ),
-                  td: ({ node, ...props }) => (
+                  td: ({ ...props }) => (
                     <td
                       style={{
                         border: `1px solid ${tableBorderColor}`,
