@@ -62,7 +62,6 @@ const TableBuilder: React.FC = () => {
     };
   }, []);
 
-  // New generateMarkdown function that builds an HTML table with nested rowspans
   const generateMarkdown = (): string => {
     let html = `<table>
   <thead>
@@ -77,21 +76,16 @@ const TableBuilder: React.FC = () => {
 `;
 
     parameters.forEach((param) => {
-      // Determine how many rows the Parameter cell should span.
-      // If there are no characteristics, it will be 1; otherwise, sum the rows for each characteristic.
       let paramRows = 0;
       if (param.characteristics.length === 0) {
         paramRows = 1;
       } else {
         param.characteristics.forEach((char) => {
-          // Each characteristic uses at least one row;
-          // if there are partitions, use the number of partitions.
           paramRows += char.partitions.length > 0 ? char.partitions.length : 1;
         });
       }
 
       if (param.characteristics.length === 0) {
-        // Parameter with no characteristics
         html += `    <tr>
       <td rowspan="${paramRows}">${param.name}</td>
       <td>-</td>
@@ -102,12 +96,10 @@ const TableBuilder: React.FC = () => {
       } else {
         let firstParamRow = true;
         param.characteristics.forEach((char) => {
-          // Calculate how many rows the Characteristic cell should span.
           const charRows =
             char.partitions.length > 0 ? char.partitions.length : 1;
           let firstCharRow = true;
           if (char.partitions.length === 0) {
-            // Characteristic with no partitions
             html += `    <tr>
 `;
             if (firstParamRow) {
@@ -155,7 +147,7 @@ const TableBuilder: React.FC = () => {
     navigator.clipboard.writeText(markdown);
     toast({
       title: 'Copied to clipboard',
-      description: 'Markdown table copied!',
+      description: 'HTML table copied!',
       status: 'success',
       duration: 2000,
       isClosable: true,
@@ -240,7 +232,7 @@ const TableBuilder: React.FC = () => {
             onClick={addParameter}
           />
           <ActionButton
-            label="Copy Markdown"
+            label="Copy HTML"
             icon={<CopyIcon />}
             onClick={copyToMarkdown}
           />
