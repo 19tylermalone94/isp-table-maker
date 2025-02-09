@@ -253,7 +253,11 @@ const TableBuilder: React.FC = () => {
 
       <Modal isOpen={isOpen} onClose={onClose} size="lg">
         <ModalOverlay />
-        <ModalContent bg={theme.colors.background.primary}>
+        <ModalContent
+          bg={theme.colors.background.primary}
+          maxW="90vw"
+          maxH="90vh"
+        >
           <ModalHeader
             bg={theme.colors.background.secondary}
             color={theme.colors.text.primary}
@@ -261,8 +265,12 @@ const TableBuilder: React.FC = () => {
             Markdown Preview
           </ModalHeader>
           <ModalCloseButton color={theme.colors.text.primary} />
-          <ModalBody bg={theme.colors.background.primary}>
-            <Box mt={3}>
+          <ModalBody
+            bg={theme.colors.background.primary}
+            maxH="70vh"
+            overflow="auto"
+          >
+            <Box mt={3} p={3} overflow="auto">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
