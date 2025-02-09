@@ -151,7 +151,6 @@ const TableBuilder: React.FC = () => {
     reader.readAsText(file);
   };
 
-
   const getTableBorderColor = () => {
     if (theme.colors.neonGreen) return theme.colors.neonGreen;
     if (theme.colors.accent && theme.colors.accent[500])
@@ -188,7 +187,11 @@ const TableBuilder: React.FC = () => {
             icon={<ViewIcon />}
             onClick={previewMarkdown}
           />
-          <ActionButton label="Export JSON" icon={<DownloadIcon />} onClick={exportToJson} />
+          <ActionButton
+            label="Export JSON"
+            icon={<DownloadIcon />}
+            onClick={exportToJson}
+          />
           <Input
             ref={fileInputRef}
             type="file"
@@ -196,7 +199,7 @@ const TableBuilder: React.FC = () => {
             onChange={importFromJson}
             style={{ display: 'none' }}
           />
-          
+
           <ActionButton
             label="Import JSON"
             icon={<FaFileUpload />}

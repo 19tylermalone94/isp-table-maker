@@ -8,14 +8,45 @@ type State = {
 type Action =
   | { type: 'SET_PARAMETERS'; payload: Parameter[] }
   | { type: 'ADD_PARAMETER' }
-  | { type: 'UPDATE_PARAMETER'; payload: { id: number; updated: Partial<Parameter> } }
+  | {
+      type: 'UPDATE_PARAMETER';
+      payload: { id: number; updated: Partial<Parameter> };
+    }
   | { type: 'DELETE_PARAMETER'; payload: { id: number } }
   | { type: 'ADD_CHARACTERISTIC'; payload: { parameterId: number } }
-  | { type: 'UPDATE_CHARACTERISTIC'; payload: { parameterId: number; characteristicId: number; updated: Partial<Characteristic> } }
-  | { type: 'DELETE_CHARACTERISTIC'; payload: { parameterId: number; characteristicId: number } }
-  | { type: 'ADD_PARTITION'; payload: { parameterId: number; characteristicId: number } }
-  | { type: 'UPDATE_PARTITION'; payload: { parameterId: number; characteristicId: number; partitionId: number; updated: Partial<Partition> } }
-  | { type: 'DELETE_PARTITION'; payload: { parameterId: number; characteristicId: number; partitionId: number } };
+  | {
+      type: 'UPDATE_CHARACTERISTIC';
+      payload: {
+        parameterId: number;
+        characteristicId: number;
+        updated: Partial<Characteristic>;
+      };
+    }
+  | {
+      type: 'DELETE_CHARACTERISTIC';
+      payload: { parameterId: number; characteristicId: number };
+    }
+  | {
+      type: 'ADD_PARTITION';
+      payload: { parameterId: number; characteristicId: number };
+    }
+  | {
+      type: 'UPDATE_PARTITION';
+      payload: {
+        parameterId: number;
+        characteristicId: number;
+        partitionId: number;
+        updated: Partial<Partition>;
+      };
+    }
+  | {
+      type: 'DELETE_PARTITION';
+      payload: {
+        parameterId: number;
+        characteristicId: number;
+        partitionId: number;
+      };
+    };
 
 const initialState: State = {
   parameters: [],
