@@ -6,6 +6,7 @@ export type Partition = {
 
 export type Characteristic = {
   id: number;
+  basePartitionId?: number;
   name: string;
   partitions: Partition[];
 };

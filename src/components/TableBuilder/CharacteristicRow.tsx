@@ -120,7 +120,6 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
             </HStack>
           </Td>
           <Td>
-            <HStack></HStack>
             <Input
               color={theme.colors.text.primary}
               value={firstPartition.name}
@@ -149,6 +148,18 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
             />
           </Td>
           <Td>
+            <input
+              type="radio"
+              name={`base-choice-${characteristic.id}`}
+              checked={firstPartition.id === characteristic.basePartitionId}
+              onChange={() =>
+                updateCharacteristic(parameter.id, characteristic.id, {
+                  basePartitionId: firstPartition.id,
+                })
+              }
+            />
+          </Td>
+          <Td>
             <ActionButton
               label="Delete Partition"
               icon={<CloseIcon />}
@@ -171,6 +182,12 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
             partition={part}
             updatePartition={updatePartition}
             deletePartition={deletePartition}
+            setBaseChoice={() =>
+              updateCharacteristic(parameter.id, characteristic.id, {
+                basePartitionId: part.id,
+              })
+            }
+            isBase={part.id === characteristic.basePartitionId}
           />
         ))}
       </>
@@ -222,6 +239,7 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
             />
           </HStack>
         </Td>
+        <Td>-</Td>
         <Td>-</Td>
         <Td>-</Td>
         <Td>-</Td>

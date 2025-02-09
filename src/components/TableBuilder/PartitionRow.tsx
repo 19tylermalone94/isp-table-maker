@@ -19,6 +19,8 @@ type PartitionRowProps = {
     characteristicId: number,
     partitionId: number,
   ) => void;
+  setBaseChoice?: () => void;
+  isBase?: boolean;
 };
 
 const PartitionRow: React.FC<PartitionRowProps> = ({
@@ -27,6 +29,8 @@ const PartitionRow: React.FC<PartitionRowProps> = ({
   partition,
   updatePartition,
   deletePartition,
+  setBaseChoice,
+  isBase = false,
 }) => {
   const theme = useTheme();
 
@@ -52,6 +56,14 @@ const PartitionRow: React.FC<PartitionRowProps> = ({
               value: e.target.value,
             })
           }
+        />
+      </Td>
+      <Td>
+        <input
+          type="radio"
+          name={`base-choice-${characteristic.id}`}
+          checked={isBase}
+          onChange={setBaseChoice}
         />
       </Td>
       <Td>

@@ -55,7 +55,7 @@ const ParameterRow: React.FC<ParameterRowProps> = ({
   if (parameter.characteristics.length === 0) {
     return (
       <Tr>
-        <Td rowSpan={1} verticalAlign="middle">
+        <Td verticalAlign="middle">
           <HStack>
             <Input
               color={theme.colors.text.primary}
@@ -77,9 +77,10 @@ const ParameterRow: React.FC<ParameterRowProps> = ({
             />
           </HStack>
         </Td>
-        <Td colSpan={3} textAlign="center" color={theme.colors.text.primary}>
+        <Td colSpan={4} textAlign="center" color={theme.colors.text.primary}>
           No characteristics added
         </Td>
+        <Td></Td>
       </Tr>
     );
   }

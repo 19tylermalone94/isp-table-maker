@@ -91,7 +91,11 @@ function parametersReducer(state: State, action: Action): State {
                 ...param,
                 characteristics: [
                   ...param.characteristics,
-                  { id: Date.now(), name: '', partitions: [] },
+                  {
+                    id: Date.now(),
+                    name: '',
+                    partitions: [],
+                  },
                 ],
               }
             : param,
@@ -265,7 +269,7 @@ export const useParameters = () => {
 
   return {
     parameters: state.parameters,
-    setParameters, // 🔥 New function to set the entire parameter list
+    setParameters,
     addParameter,
     updateParameter,
     deleteParameter,
