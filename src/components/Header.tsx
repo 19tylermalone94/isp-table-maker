@@ -1,6 +1,6 @@
 import { Box, Flex, IconButton, Text, Spacer, useTheme, Link } from "@chakra-ui/react";
 import { MoonIcon } from "@chakra-ui/icons";
-import { FaGithub } from "react-icons/fa";
+import { FaFlask, FaGithub } from "react-icons/fa";
 
 type HeaderProps = {
   toggleTheme: () => void;
@@ -12,7 +12,8 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme }) => {
   return (
     <Box as="header" bg={theme.colors.brand[600]} px={6} py={4} boxShadow="md">
       <Flex align="center">
-        <Text fontSize="xl" fontWeight="bold" color={theme.colors.text.primary}>
+        <FaFlask />
+        <Text alignItems="center" fontSize="xl" fontWeight="bold" color={theme.colors.text.primary}>
           ISP Table Maker
         </Text>
         <Spacer />

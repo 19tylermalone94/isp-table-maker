@@ -90,7 +90,7 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
             <HStack>
               <Input
                 color={theme.colors.text.primary}
-                value={parameter.name}
+                value={characteristic.name}
                 onChange={handleCharacteristicNameChange}
               />
               <ActionButton 
