@@ -262,7 +262,7 @@ const TableBuilder: React.FC = () => {
           </ModalHeader>
           <ModalCloseButton color={theme.colors.text.primary} />
           <ModalBody bg={theme.colors.background.primary}>
-            <Box p={4}>
+            <Box mt={3}>
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
