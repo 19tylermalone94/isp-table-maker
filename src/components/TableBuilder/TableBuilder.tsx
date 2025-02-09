@@ -27,7 +27,7 @@ import {
 } from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw'; // allow raw HTML rendering
+import rehypeRaw from 'rehype-raw';
 import ParameterRow from './ParameterRow';
 import { useParameters } from '../../hooks/useParameters';
 import { AddIcon, CopyIcon, DownloadIcon, ViewIcon } from '@chakra-ui/icons';
@@ -40,11 +40,6 @@ interface BccTestRow {
   characteristicValues: string[];
 }
 
-/**
- * OracleInput isolates the text box’s internal state.
- * It uses its own local state (initialized from the passed-in value)
- * and only notifies the parent (via onBlur) without causing a re-render.
- */
 interface OracleInputProps {
   testName: string;
   initialValue: string;
@@ -52,10 +47,9 @@ interface OracleInputProps {
 }
 
 const OracleInput: React.FC<OracleInputProps> = React.memo(
-  ({ testName, initialValue, onBlur }) => {
+  ({ initialValue, onBlur }) => {
     const [value, setValue] = useState(initialValue);
 
-    // Only update local state if the initialValue changes.
     useEffect(() => {
       setValue(initialValue);
     }, [initialValue]);
@@ -98,9 +92,8 @@ const TableBuilder: React.FC = () => {
   const theme = useTheme();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [markdownPreview, setMarkdownPreview] = useState('');
-  // Toggle between ISP preview and interactive BCC preview.
   const [isBccPreview, setIsBccPreview] = useState(false);
-  // Instead of using state for Oracle values, use a ref so that updates don’t trigger re-renders.
+  // Use a ref for Oracle values so that updates don’t trigger re‑renders.
   const oracleValuesRef = useRef<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -112,18 +105,16 @@ const TableBuilder: React.FC = () => {
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
-
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, []);
 
-  // ISP table generation remains unchanged.
   const generateMarkdown = (): string => {
     let html = `<table>
     <thead>
       <tr>
-        <th>Variable</th>
+        <th>Parameter</th>
         <th>Characteristic</th>
         <th>Partition</th>
         <th>Value</th>
@@ -143,7 +134,6 @@ const TableBuilder: React.FC = () => {
       }
       let firstParamRow = true;
       param.characteristics.forEach((char) => {
-        // Use a global counter to assign letters from A-Z.
         const characteristicLetter = String.fromCharCode(65 + globalCharIndex);
         globalCharIndex++;
         const characteristicCode = `${characteristicLetter}) ${char.name}`;
@@ -192,7 +182,7 @@ const TableBuilder: React.FC = () => {
     return html;
   };
 
-  // Build an array of BCC test rows based on global characteristics.
+  // Build an array of BCC test rows.
   const buildBccTestRows = (): BccTestRow[] => {
     const rows: BccTestRow[] = [];
     const globalChars: {
@@ -207,13 +197,11 @@ const TableBuilder: React.FC = () => {
       });
     });
     if (globalChars.length === 0) return rows;
-    // Ensure every characteristic with partitions has a base choice selected.
     const incomplete = globalChars.some(
       (gc) => gc.characteristic.basePartitionId == null,
     );
     if (incomplete) return rows;
 
-    // Base test row.
     const baseRow: BccTestRow = {
       testName: 'T1 (base test)',
       characteristicValues: globalChars.map((gc) => {
@@ -225,7 +213,6 @@ const TableBuilder: React.FC = () => {
     };
     rows.push(baseRow);
     let testCount = 1;
-    // For each characteristic, generate a test for each non‑base partition.
     globalChars.forEach((gc, charIndex) => {
       const char = gc.characteristic;
       char.partitions.forEach((part: Partition) => {
@@ -252,11 +239,10 @@ const TableBuilder: React.FC = () => {
     return rows;
   };
 
-  // Generate a static HTML string for the BCC table using the current oracle values.
+  // Generate BCC markdown using the fixed green color (#d3e7c9)
   const generateBccMarkdownWithOracle = (): string => {
     const rows = buildBccTestRows();
     if (rows.length === 0) return '';
-    // Use the base test row for comparison.
     const baseValues = rows[0].characteristicValues;
     let html = `<h3>Base Choice Coverage</h3>`;
     html += `<table border="1" cellspacing="0" cellpadding="8">
@@ -264,18 +250,16 @@ const TableBuilder: React.FC = () => {
     <tr>
       <th>Test</th>`;
     rows[0].characteristicValues.forEach((_, index) => {
-      html += `<th>Characteristic ${index + 1}</th>`;
+      html += `<th>Characteristic ${String.fromCharCode(65 + index)}</th>`;
     });
     html += `<th>Oracle</th></tr></thead><tbody>`;
     rows.forEach((row) => {
       html += `<tr>`;
       html += `<td>${row.testName}</td>`;
       row.characteristicValues.forEach((val, index) => {
-        // Only color the cell if it equals the base value.
         const bgColor = baseValues[index] === val ? '#d3e7c9' : 'transparent';
         html += `<td style="background-color: ${bgColor};">${val}</td>`;
       });
-      // Read the oracle value from the ref.
       const oracle =
         oracleValuesRef.current[row.testName] || 'expected value/behavior';
       html += `<td>${oracle}</td>`;
@@ -297,7 +281,6 @@ const TableBuilder: React.FC = () => {
     });
   };
 
-  // Updated copy function for BCC that uses the interactive Oracle values.
   const copyBccToMarkdown = () => {
     const markdown = generateBccMarkdownWithOracle();
     if (!markdown) {
@@ -328,7 +311,6 @@ const TableBuilder: React.FC = () => {
     onOpen();
   };
 
-  // For BCC preview, we use the interactive table.
   const previewBCC = () => {
     setIsBccPreview(true);
     onOpen();
@@ -378,6 +360,7 @@ const TableBuilder: React.FC = () => {
     reader.readAsText(file);
   };
 
+  // Compute table border color (used for both previews).
   const getTableBorderColor = () => {
     if (theme.colors.neonGreen) return theme.colors.neonGreen;
     if (theme.colors.accent && theme.colors.accent[500])
@@ -389,12 +372,11 @@ const TableBuilder: React.FC = () => {
 
   const tableBorderColor = getTableBorderColor();
 
-  // Update the Oracle value in the ref (no state update, so no re-render).
   const updateOracleValue = useCallback((testName: string, value: string) => {
     oracleValuesRef.current[testName] = value;
   }, []);
 
-  // The memoized interactive BCC table component.
+  // Interactive BCC table component using the current theme accent for highlighting.
   const BccTableInteractive = React.memo(
     ({
       parameters,
@@ -403,7 +385,29 @@ const TableBuilder: React.FC = () => {
       parameters: Parameter[];
       updateOracleValue: (testName: string, value: string) => void;
     }) => {
-      // Memoize the rows so that changes to Oracle values do not cause re-creation.
+      // Use the theme within this component.
+      const localTheme = useTheme();
+      // Recalculate table border color locally.
+      const getLocalTableBorderColor = () => {
+        if (localTheme.colors.neonGreen) return localTheme.colors.neonGreen;
+        if (localTheme.colors.accent && localTheme.colors.accent[500])
+          return localTheme.colors.accent[500];
+        if (localTheme.colors.brand && localTheme.colors.brand[500])
+          return localTheme.colors.brand[500];
+        return '#ddd';
+      };
+      const localTableBorderColor = getLocalTableBorderColor();
+      // Define header style so that it matches the ISP preview.
+      const headerStyle = {
+        border: `1px solid ${localTableBorderColor}`,
+        padding: '8px',
+        backgroundColor: localTheme.colors.background.secondary || '#f2f2f2',
+        color: localTheme.colors.text.primary,
+      };
+      const interactiveHighlightColor =
+        localTheme.colors.accent && localTheme.colors.accent[500]
+          ? localTheme.colors.accent[500]
+          : '#d3e7c9';
       const rows = useMemo(() => buildBccTestRows(), [parameters]);
       if (rows.length === 0) {
         return (
@@ -413,18 +417,19 @@ const TableBuilder: React.FC = () => {
           </Box>
         );
       }
-      // Use the base test row for comparison.
       const baseValues = rows[0].characteristicValues;
       return (
         <Box overflowX="auto">
           <Table border="1" cellSpacing="0" cellPadding="8">
             <Thead>
               <Tr>
-                <Th>Test</Th>
+                <Th style={headerStyle}>Test</Th>
                 {rows[0].characteristicValues.map((_, index) => (
-                  <Th key={index}>Characteristic {index + 1}</Th>
+                  <Th key={index} style={headerStyle}>
+                    Characteristic {String.fromCharCode(65 + index)}
+                  </Th>
                 ))}
-                <Th>Oracle</Th>
+                <Th style={headerStyle}>Oracle</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -436,7 +441,9 @@ const TableBuilder: React.FC = () => {
                       key={index}
                       style={{
                         backgroundColor:
-                          baseValues[index] === val ? '#d3e7c9' : 'inherit',
+                          baseValues[index] === val
+                            ? interactiveHighlightColor
+                            : 'inherit',
                       }}
                     >
                       {val}
@@ -445,7 +452,6 @@ const TableBuilder: React.FC = () => {
                   <Td>
                     <OracleInput
                       testName={row.testName}
-                      // Provide the current value from the ref; note that the ref won’t trigger re-renders.
                       initialValue={oracleValuesRef.current[row.testName] || ''}
                       onBlur={(value) => updateOracleValue(row.testName, value)}
                     />
@@ -569,7 +575,9 @@ const TableBuilder: React.FC = () => {
             bg={theme.colors.background.secondary}
             color={theme.colors.text.primary}
           >
-            {isBccPreview ? 'Interactive BCC Test Set' : 'Markdown Preview'}
+            {isBccPreview
+              ? 'Basic Choice Coverage Test Set'
+              : 'Markdown Preview'}
           </ModalHeader>
           <ModalCloseButton color={theme.colors.text.primary} />
           <ModalBody
@@ -586,7 +594,7 @@ const TableBuilder: React.FC = () => {
               ) : (
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw]} // allow raw HTML in markdownPreview
+                  rehypePlugins={[rehypeRaw]}
                   components={{
                     table: ({ ...props }) => (
                       <table
