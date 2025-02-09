@@ -20,6 +20,7 @@ import {
 } from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw'; // allow raw HTML rendering
 import ParameterRow from './ParameterRow';
 import { useParameters } from '../../hooks/useParameters';
 import { AddIcon, CopyIcon, DownloadIcon, ViewIcon } from '@chakra-ui/icons';
@@ -62,30 +63,83 @@ const TableBuilder: React.FC = () => {
   }, []);
 
   const generateMarkdown = (): string => {
-    let markdown = `| Parameter | Characteristic | Partition | Value |\n`;
-    markdown += `|----------|--------------|----------|-------|\n`;
+    let html = `<table>
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Characteristic</th>
+      <th>Partition</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+`;
 
     parameters.forEach((param) => {
+      let paramRows = 0;
       if (param.characteristics.length === 0) {
-        markdown += `| ${param.name} | - | - | - |\n`;
-        return;
+        paramRows = 1;
+      } else {
+        param.characteristics.forEach((char) => {
+          paramRows += char.partitions.length > 0 ? char.partitions.length : 1;
+        });
       }
 
-      param.characteristics.forEach((char, charIndex) => {
-        if (char.partitions.length === 0) {
-          markdown += `| ${charIndex === 0 ? param.name : ''} | ${char.name} | - | - |\n`;
-          return;
-        }
-
-        char.partitions.forEach((part, partIndex) => {
-          markdown += `| ${charIndex === 0 && partIndex === 0 ? param.name : ''} | ${
-            partIndex === 0 ? char.name : ''
-          } | ${part.name} | ${part.value} |\n`;
+      if (param.characteristics.length === 0) {
+        html += `    <tr>
+      <td rowspan="${paramRows}">${param.name}</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+`;
+      } else {
+        let firstParamRow = true;
+        param.characteristics.forEach((char) => {
+          const charRows =
+            char.partitions.length > 0 ? char.partitions.length : 1;
+          let firstCharRow = true;
+          if (char.partitions.length === 0) {
+            html += `    <tr>
+`;
+            if (firstParamRow) {
+              html += `      <td rowspan="${paramRows}">${param.name}</td>
+`;
+              firstParamRow = false;
+            }
+            html += `      <td rowspan="${charRows}">${char.name}</td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+`;
+          } else {
+            char.partitions.forEach((part) => {
+              html += `    <tr>
+`;
+              if (firstParamRow) {
+                html += `      <td rowspan="${paramRows}">${param.name}</td>
+`;
+                firstParamRow = false;
+              }
+              if (firstCharRow) {
+                html += `      <td rowspan="${charRows}">${char.name}</td>
+`;
+                firstCharRow = false;
+              }
+              html += `      <td>${part.name}</td>
+      <td>${part.value}</td>
+    </tr>
+`;
+            });
+          }
         });
-      });
+      }
     });
 
-    return markdown;
+    html += `  </tbody>
+</table>
+`;
+    return html;
   };
 
   const copyToMarkdown = () => {
@@ -93,7 +147,7 @@ const TableBuilder: React.FC = () => {
     navigator.clipboard.writeText(markdown);
     toast({
       title: 'Copied to clipboard',
-      description: 'Markdown table copied!',
+      description: 'HTML table copied!',
       status: 'success',
       duration: 2000,
       isClosable: true,
@@ -178,7 +232,7 @@ const TableBuilder: React.FC = () => {
             onClick={addParameter}
           />
           <ActionButton
-            label="Copy Markdown"
+            label="Copy HTML"
             icon={<CopyIcon />}
             onClick={copyToMarkdown}
           />
@@ -203,7 +257,7 @@ const TableBuilder: React.FC = () => {
           <ActionButton
             label="Import JSON"
             icon={<FaFileUpload />}
-            onClick={() => fileInputRef.current?.click()} // ✅ Manually open file explorer
+            onClick={() => fileInputRef.current?.click()}
           />
         </HStack>
 
@@ -273,6 +327,7 @@ const TableBuilder: React.FC = () => {
             <Box mt={3} p={3} overflow="auto">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]} // allow raw HTML in markdownPreview
                 components={{
                   table: ({ ...props }) => (
                     <table
