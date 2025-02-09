@@ -64,19 +64,20 @@ const TableBuilder: React.FC = () => {
 
   const generateMarkdown = (): string => {
     let html = `<table>
-  <thead>
-    <tr>
-      <th>Parameter</th>
-      <th>Characteristic</th>
-      <th>Partition</th>
-      <th>Value</th>
-    </tr>
-  </thead>
-  <tbody>
-`;
+    <thead>
+      <tr>
+        <th>Variable</th>
+        <th>Characteristic</th>
+        <th>Partition</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
 
     parameters.forEach((param) => {
       let paramRows = 0;
+
       if (param.characteristics.length === 0) {
         paramRows = 1;
       } else {
@@ -85,60 +86,56 @@ const TableBuilder: React.FC = () => {
         });
       }
 
-      if (param.characteristics.length === 0) {
-        html += `    <tr>
-      <td rowspan="${paramRows}">${param.name}</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-    </tr>
-`;
-      } else {
-        let firstParamRow = true;
-        param.characteristics.forEach((char) => {
-          const charRows =
-            char.partitions.length > 0 ? char.partitions.length : 1;
-          let firstCharRow = true;
-          if (char.partitions.length === 0) {
+      let firstParamRow = true;
+      param.characteristics.forEach((char, charIndex) => {
+        // Assign letters (A, B, C...) **per parameter**
+        const characteristicLetter = String.fromCharCode(65 + charIndex); // 'A', 'B', 'C', etc.
+        const characteristicCode = `${characteristicLetter}) ${char.name}`;
+        let firstCharRow = true;
+        const charRows =
+          char.partitions.length > 0 ? char.partitions.length : 1;
+
+        if (char.partitions.length === 0) {
+          html += `    <tr>
+  `;
+          if (firstParamRow) {
+            html += `      <td rowspan="${paramRows}">${param.name}</td>
+  `;
+            firstParamRow = false;
+          }
+          html += `      <td rowspan="${charRows}">${characteristicCode}</td>
+        <td>-</td>
+        <td>-</td>
+      </tr>
+  `;
+        } else {
+          char.partitions.forEach((part, partIndex) => {
+            // Format partitions as `{CharacteristicLetter}{Number})`
+            const partitionCode = `${characteristicLetter}${partIndex + 1}) ${part.name}`;
             html += `    <tr>
-`;
+  `;
             if (firstParamRow) {
               html += `      <td rowspan="${paramRows}">${param.name}</td>
-`;
+  `;
               firstParamRow = false;
             }
-            html += `      <td rowspan="${charRows}">${char.name}</td>
-      <td>-</td>
-      <td>-</td>
-    </tr>
-`;
-          } else {
-            char.partitions.forEach((part) => {
-              html += `    <tr>
-`;
-              if (firstParamRow) {
-                html += `      <td rowspan="${paramRows}">${param.name}</td>
-`;
-                firstParamRow = false;
-              }
-              if (firstCharRow) {
-                html += `      <td rowspan="${charRows}">${char.name}</td>
-`;
-                firstCharRow = false;
-              }
-              html += `      <td>${part.name}</td>
-      <td>${part.value}</td>
-    </tr>
-`;
-            });
-          }
-        });
-      }
+            if (firstCharRow) {
+              html += `      <td rowspan="${charRows}">${characteristicCode}</td>
+  `;
+              firstCharRow = false;
+            }
+            html += `      <td>${partitionCode}</td>
+        <td>${part.value}</td>
+      </tr>
+  `;
+          });
+        }
+      });
     });
 
     html += `  </tbody>
-</table>
-`;
+  </table>
+  `;
     return html;
   };
 
