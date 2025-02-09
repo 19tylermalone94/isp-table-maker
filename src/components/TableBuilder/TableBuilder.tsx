@@ -205,6 +205,7 @@ const TableBuilder: React.FC = () => {
         </HStack>
 
         <Box
+          boxShadow="lg"
           flex="1"
           overflowY="auto"
           border={`1px solid ${theme.colors.brand[900]}`}

@@ -20,6 +20,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   return (
     <Tooltip label={label} placement="top-start">
       <IconButton
+        boxShadow="lg"
         icon={icon}
         aria-label={label}
         color={theme.colors.text.primary}

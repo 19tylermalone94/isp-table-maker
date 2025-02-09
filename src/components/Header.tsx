@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Spacer, useTheme, Link } from '@chakra-ui/react';
+import { Box, Flex, Text, Spacer, useTheme, Link, IconButton, Tooltip } from '@chakra-ui/react';
 import { MoonIcon } from '@chakra-ui/icons';
 import { FaGithub } from 'react-icons/fa';
 import ActionButton from './TableBuilder/ActionButton';
@@ -23,13 +23,24 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme }) => {
           aria-label="GitHub Repository"
           mx={4}
         >
-          <ActionButton label={'View Source'} icon={<FaGithub />} />
+          <Tooltip label="View Source" placement='bottom-end'>
+            <IconButton
+              icon={<FaGithub />}
+              aria-label="View Source"
+              _hover={{ bg: theme.colors.text.primary[600] }}
+              bg="transparent"
+            />
+          </Tooltip>
         </Link>
-        <ActionButton
-          label={'Toggle Theme'}
-          icon={<MoonIcon />}
-          onClick={toggleTheme}
-        />
+        <Tooltip label="Toggle Theme" placement='bottom-end'>
+          <IconButton
+            icon={<MoonIcon />}
+            aria-label="Toggle Theme"
+            _hover={{ bg: theme.colors.text.primary[600] }}
+            bg="transparent"
+            onClick={toggleTheme}
+          />
+        </Tooltip>
       </Flex>
     </Box>
   );
