@@ -6,46 +6,16 @@ type State = {
 };
 
 type Action =
+  | { type: 'SET_PARAMETERS'; payload: Parameter[] }
   | { type: 'ADD_PARAMETER' }
-  | {
-      type: 'UPDATE_PARAMETER';
-      payload: { id: number; updated: Partial<Parameter> };
-    }
+  | { type: 'UPDATE_PARAMETER'; payload: { id: number; updated: Partial<Parameter> } }
   | { type: 'DELETE_PARAMETER'; payload: { id: number } }
   | { type: 'ADD_CHARACTERISTIC'; payload: { parameterId: number } }
-  | {
-      type: 'UPDATE_CHARACTERISTIC';
-      payload: {
-        parameterId: number;
-        characteristicId: number;
-        updated: Partial<Characteristic>;
-      };
-    }
-  | {
-      type: 'DELETE_CHARACTERISTIC';
-      payload: { parameterId: number; characteristicId: number };
-    }
-  | {
-      type: 'ADD_PARTITION';
-      payload: { parameterId: number; characteristicId: number };
-    }
-  | {
-      type: 'UPDATE_PARTITION';
-      payload: {
-        parameterId: number;
-        characteristicId: number;
-        partitionId: number;
-        updated: Partial<Partition>;
-      };
-    }
-  | {
-      type: 'DELETE_PARTITION';
-      payload: {
-        parameterId: number;
-        characteristicId: number;
-        partitionId: number;
-      };
-    };
+  | { type: 'UPDATE_CHARACTERISTIC'; payload: { parameterId: number; characteristicId: number; updated: Partial<Characteristic> } }
+  | { type: 'DELETE_CHARACTERISTIC'; payload: { parameterId: number; characteristicId: number } }
+  | { type: 'ADD_PARTITION'; payload: { parameterId: number; characteristicId: number } }
+  | { type: 'UPDATE_PARTITION'; payload: { parameterId: number; characteristicId: number; partitionId: number; updated: Partial<Partition> } }
+  | { type: 'DELETE_PARTITION'; payload: { parameterId: number; characteristicId: number; partitionId: number } };
 
 const initialState: State = {
   parameters: [],
@@ -53,6 +23,9 @@ const initialState: State = {
 
 function parametersReducer(state: State, action: Action): State {
   switch (action.type) {
+    case 'SET_PARAMETERS': {
+      return { ...state, parameters: action.payload };
+    }
     case 'ADD_PARAMETER': {
       const newParameter: Parameter = {
         id: Date.now(),
@@ -207,6 +180,9 @@ function parametersReducer(state: State, action: Action): State {
 export const useParameters = () => {
   const [state, dispatch] = useReducer(parametersReducer, initialState);
 
+  const setParameters = (parameters: Parameter[]) =>
+    dispatch({ type: 'SET_PARAMETERS', payload: parameters });
+
   const addParameter = () => dispatch({ type: 'ADD_PARAMETER' });
   const updateParameter = (id: number, updated: Partial<Parameter>) =>
     dispatch({ type: 'UPDATE_PARAMETER', payload: { id, updated } });
@@ -258,6 +234,7 @@ export const useParameters = () => {
 
   return {
     parameters: state.parameters,
+    setParameters, // 🔥 New function to set the entire parameter list
     addParameter,
     updateParameter,
     deleteParameter,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Table,
@@ -16,17 +16,20 @@ import {
   ModalCloseButton,
   ModalBody,
   useDisclosure,
+  Input,
 } from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ParameterRow from './ParameterRow';
 import { useParameters } from '../../hooks/useParameters';
-import { AddIcon, CopyIcon, ViewIcon } from '@chakra-ui/icons';
+import { AddIcon, CopyIcon, DownloadIcon, ViewIcon } from '@chakra-ui/icons';
 import ActionButton from './ActionButton';
+import { FaFileUpload } from 'react-icons/fa';
 
 const TableBuilder: React.FC = () => {
   const {
     parameters,
+    setParameters,
     addParameter,
     updateParameter,
     deleteParameter,
@@ -42,6 +45,21 @@ const TableBuilder: React.FC = () => {
   const theme = useTheme();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [markdownPreview, setMarkdownPreview] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue =
+        'Are you sure you want to leave? Unsaved changes will be lost.';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   const generateMarkdown = (): string => {
     let markdown = `| Parameter | Characteristic | Partition | Value |\n`;
@@ -88,6 +106,52 @@ const TableBuilder: React.FC = () => {
     onOpen();
   };
 
+  const exportToJson = () => {
+    const jsonString = JSON.stringify(parameters, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'table-data.json';
+    a.click();
+    toast({
+      title: 'Exported successfully',
+      description: 'Your table has been saved as a JSON file.',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    });
+  };
+
+  const importFromJson = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target?.result as string);
+        setParameters(importedData);
+        toast({
+          title: 'Imported successfully',
+          description: 'Your table has been loaded from the JSON file.',
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+      } catch (error) {
+        toast({
+          title: 'Import failed',
+          description: 'Invalid JSON format.',
+          status: 'error',
+          duration: 2000,
+          isClosable: true,
+        });
+      }
+    };
+    reader.readAsText(file);
+  };
+
+
   const getTableBorderColor = () => {
     if (theme.colors.neonGreen) return theme.colors.neonGreen;
     if (theme.colors.accent && theme.colors.accent[500])
@@ -123,6 +187,20 @@ const TableBuilder: React.FC = () => {
             label="Preview Markdown"
             icon={<ViewIcon />}
             onClick={previewMarkdown}
+          />
+          <ActionButton label="Export JSON" icon={<DownloadIcon />} onClick={exportToJson} />
+          <Input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json"
+            onChange={importFromJson}
+            style={{ display: 'none' }}
+          />
+          
+          <ActionButton
+            label="Import JSON"
+            icon={<FaFileUpload />}
+            onClick={() => fileInputRef.current?.click()} // ✅ Manually open file explorer
           />
         </HStack>
 
