@@ -659,7 +659,7 @@ const TableBuilder: React.FC = () => {
           >
             {isBccPreview
               ? 'Base Choice Coverage Test Set'
-              : 'Markdown Preview'}
+              : 'ISP Table Preview'}
           </ModalHeader>
           <ModalCloseButton color={theme.colors.text.primary} />
           <ModalBody
