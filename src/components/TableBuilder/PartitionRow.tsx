@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tr, Td, Input, useTheme } from '@chakra-ui/react';
+import { Tr, Td, Input, useTheme, Radio } from '@chakra-ui/react';
 import { Characteristic, Parameter, Partition } from '../../types/types';
 import { CloseIcon } from '@chakra-ui/icons';
 import ActionButton from './ActionButton';
@@ -59,11 +59,11 @@ const PartitionRow: React.FC<PartitionRowProps> = ({
         />
       </Td>
       <Td>
-        <input
-          type="radio"
+        <Radio
           name={`base-choice-${characteristic.id}`}
-          checked={isBase}
+          isChecked={isBase}
           onChange={setBaseChoice}
+          colorScheme="brand"
         />
       </Td>
       <Td>
