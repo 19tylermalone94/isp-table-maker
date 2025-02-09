@@ -91,7 +91,11 @@ function parametersReducer(state: State, action: Action): State {
                 ...param,
                 characteristics: [
                   ...param.characteristics,
-                  { id: Date.now(), name: '', partitions: [] },
+                  {
+                    id: Date.now(),
+                    name: '',
+                    partitions: [],
+                  },
                 ],
               }
             : param,

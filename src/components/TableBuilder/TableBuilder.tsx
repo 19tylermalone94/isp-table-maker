@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from 'react';
 import {
   Box,
   Table,
@@ -6,6 +12,7 @@ import {
   Tbody,
   Tr,
   Th,
+  Td,
   useToast,
   HStack,
   useTheme,
@@ -25,7 +32,52 @@ import ParameterRow from './ParameterRow';
 import { useParameters } from '../../hooks/useParameters';
 import { AddIcon, CopyIcon, DownloadIcon, ViewIcon } from '@chakra-ui/icons';
 import ActionButton from './ActionButton';
-import { FaFileUpload } from 'react-icons/fa';
+import { FaFileUpload, FaFlask } from 'react-icons/fa';
+import { Characteristic, Parameter, Partition } from '../../types/types';
+
+interface BccTestRow {
+  testName: string;
+  characteristicValues: string[];
+}
+
+/**
+ * OracleInput isolates the text box’s internal state.
+ * It uses its own local state (initialized from the passed-in value)
+ * and only notifies the parent (via onBlur) without causing a re-render.
+ */
+interface OracleInputProps {
+  testName: string;
+  initialValue: string;
+  onBlur: (value: string) => void;
+}
+
+const OracleInput: React.FC<OracleInputProps> = React.memo(
+  ({ testName, initialValue, onBlur }) => {
+    const [value, setValue] = useState(initialValue);
+
+    // Only update local state if the initialValue changes.
+    useEffect(() => {
+      setValue(initialValue);
+    }, [initialValue]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(e.target.value);
+    };
+
+    const handleBlur = () => {
+      onBlur(value);
+    };
+
+    return (
+      <Input
+        placeholder="Enter expected value/behavior"
+        value={value}
+        onChange={handleChange}
+        onBlur={handleBlur}
+      />
+    );
+  },
+);
 
 const TableBuilder: React.FC = () => {
   const {
@@ -46,6 +98,10 @@ const TableBuilder: React.FC = () => {
   const theme = useTheme();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [markdownPreview, setMarkdownPreview] = useState('');
+  // Toggle between ISP preview and interactive BCC preview.
+  const [isBccPreview, setIsBccPreview] = useState(false);
+  // Instead of using state for Oracle values, use a ref so that updates don’t trigger re-renders.
+  const oracleValuesRef = useRef<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -62,6 +118,7 @@ const TableBuilder: React.FC = () => {
     };
   }, []);
 
+  // ISP table generation remains unchanged.
   const generateMarkdown = (): string => {
     let html = `<table>
     <thead>
@@ -74,10 +131,9 @@ const TableBuilder: React.FC = () => {
     </thead>
     <tbody>
   `;
-
+    let globalCharIndex = 0;
     parameters.forEach((param) => {
       let paramRows = 0;
-
       if (param.characteristics.length === 0) {
         paramRows = 1;
       } else {
@@ -85,18 +141,17 @@ const TableBuilder: React.FC = () => {
           paramRows += char.partitions.length > 0 ? char.partitions.length : 1;
         });
       }
-
       let firstParamRow = true;
-      param.characteristics.forEach((char, charIndex) => {
-        // Assign letters (A, B, C...) **per parameter**
-        const characteristicLetter = String.fromCharCode(65 + charIndex); // 'A', 'B', 'C', etc.
+      param.characteristics.forEach((char) => {
+        // Use a global counter to assign letters from A-Z.
+        const characteristicLetter = String.fromCharCode(65 + globalCharIndex);
+        globalCharIndex++;
         const characteristicCode = `${characteristicLetter}) ${char.name}`;
         let firstCharRow = true;
         const charRows =
           char.partitions.length > 0 ? char.partitions.length : 1;
-
         if (char.partitions.length === 0) {
-          html += `    <tr>
+          html += `<tr>
   `;
           if (firstParamRow) {
             html += `      <td rowspan="${paramRows}">${param.name}</td>
@@ -110,9 +165,8 @@ const TableBuilder: React.FC = () => {
   `;
         } else {
           char.partitions.forEach((part, partIndex) => {
-            // Format partitions as `{CharacteristicLetter}{Number})`
             const partitionCode = `${characteristicLetter}${partIndex + 1}) ${part.name}`;
-            html += `    <tr>
+            html += `<tr>
   `;
             if (firstParamRow) {
               html += `      <td rowspan="${paramRows}">${param.name}</td>
@@ -132,10 +186,102 @@ const TableBuilder: React.FC = () => {
         }
       });
     });
-
     html += `  </tbody>
   </table>
   `;
+    return html;
+  };
+
+  // Build an array of BCC test rows based on global characteristics.
+  const buildBccTestRows = (): BccTestRow[] => {
+    const rows: BccTestRow[] = [];
+    const globalChars: {
+      parameter: Parameter;
+      characteristic: Characteristic;
+    }[] = [];
+    parameters.forEach((param) => {
+      param.characteristics.forEach((char) => {
+        if (char.partitions && char.partitions.length > 0) {
+          globalChars.push({ parameter: param, characteristic: char });
+        }
+      });
+    });
+    if (globalChars.length === 0) return rows;
+    // Ensure every characteristic with partitions has a base choice selected.
+    const incomplete = globalChars.some(
+      (gc) => gc.characteristic.basePartitionId == null,
+    );
+    if (incomplete) return rows;
+
+    // Base test row.
+    const baseRow: BccTestRow = {
+      testName: 'T1 (base test)',
+      characteristicValues: globalChars.map((gc) => {
+        const basePart = gc.characteristic.partitions.find(
+          (p: Partition) => p.id === gc.characteristic.basePartitionId,
+        );
+        return basePart ? basePart.name : '';
+      }),
+    };
+    rows.push(baseRow);
+    let testCount = 1;
+    // For each characteristic, generate a test for each non‑base partition.
+    globalChars.forEach((gc, charIndex) => {
+      const char = gc.characteristic;
+      char.partitions.forEach((part: Partition) => {
+        if (part.id !== char.basePartitionId) {
+          testCount++;
+          const row: BccTestRow = {
+            testName: `T${testCount}`,
+            characteristicValues: globalChars.map((otherGC, j) => {
+              if (j === charIndex) {
+                return part.name;
+              } else {
+                const base = otherGC.characteristic.partitions.find(
+                  (p: Partition) =>
+                    p.id === otherGC.characteristic.basePartitionId,
+                );
+                return base ? base.name : '';
+              }
+            }),
+          };
+          rows.push(row);
+        }
+      });
+    });
+    return rows;
+  };
+
+  // Generate a static HTML string for the BCC table using the current oracle values.
+  const generateBccMarkdownWithOracle = (): string => {
+    const rows = buildBccTestRows();
+    if (rows.length === 0) return '';
+    // Use the base test row for comparison.
+    const baseValues = rows[0].characteristicValues;
+    let html = `<h3>Base Choice Coverage</h3>`;
+    html += `<table border="1" cellspacing="0" cellpadding="8">
+  <thead>
+    <tr>
+      <th>Test</th>`;
+    rows[0].characteristicValues.forEach((_, index) => {
+      html += `<th>Characteristic ${index + 1}</th>`;
+    });
+    html += `<th>Oracle</th></tr></thead><tbody>`;
+    rows.forEach((row) => {
+      html += `<tr>`;
+      html += `<td>${row.testName}</td>`;
+      row.characteristicValues.forEach((val, index) => {
+        // Only color the cell if it equals the base value.
+        const bgColor = baseValues[index] === val ? '#d3e7c9' : 'transparent';
+        html += `<td style="background-color: ${bgColor};">${val}</td>`;
+      });
+      // Read the oracle value from the ref.
+      const oracle =
+        oracleValuesRef.current[row.testName] || 'expected value/behavior';
+      html += `<td>${oracle}</td>`;
+      html += `</tr>`;
+    });
+    html += `</tbody></table>`;
     return html;
   };
 
@@ -151,9 +297,40 @@ const TableBuilder: React.FC = () => {
     });
   };
 
-  const previewMarkdown = () => {
+  // Updated copy function for BCC that uses the interactive Oracle values.
+  const copyBccToMarkdown = () => {
+    const markdown = generateBccMarkdownWithOracle();
+    if (!markdown) {
+      toast({
+        title: 'BCC Table not generated',
+        description:
+          'Please ensure that every characteristic with partitions has a base choice selected.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+    navigator.clipboard.writeText(markdown);
+    toast({
+      title: 'Copied to clipboard',
+      description: 'BCC HTML table copied!',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    });
+  };
+
+  const previewISP = () => {
+    setIsBccPreview(false);
     const markdown = generateMarkdown();
     setMarkdownPreview(markdown);
+    onOpen();
+  };
+
+  // For BCC preview, we use the interactive table.
+  const previewBCC = () => {
+    setIsBccPreview(true);
     onOpen();
   };
 
@@ -176,7 +353,6 @@ const TableBuilder: React.FC = () => {
   const importFromJson = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
@@ -213,6 +389,76 @@ const TableBuilder: React.FC = () => {
 
   const tableBorderColor = getTableBorderColor();
 
+  // Update the Oracle value in the ref (no state update, so no re-render).
+  const updateOracleValue = useCallback((testName: string, value: string) => {
+    oracleValuesRef.current[testName] = value;
+  }, []);
+
+  // The memoized interactive BCC table component.
+  const BccTableInteractive = React.memo(
+    ({
+      parameters,
+      updateOracleValue,
+    }: {
+      parameters: Parameter[];
+      updateOracleValue: (testName: string, value: string) => void;
+    }) => {
+      // Memoize the rows so that changes to Oracle values do not cause re-creation.
+      const rows = useMemo(() => buildBccTestRows(), [parameters]);
+      if (rows.length === 0) {
+        return (
+          <Box p={4}>
+            Please ensure that every characteristic with partitions has a base
+            choice selected.
+          </Box>
+        );
+      }
+      // Use the base test row for comparison.
+      const baseValues = rows[0].characteristicValues;
+      return (
+        <Box overflowX="auto">
+          <Table border="1" cellSpacing="0" cellPadding="8">
+            <Thead>
+              <Tr>
+                <Th>Test</Th>
+                {rows[0].characteristicValues.map((_, index) => (
+                  <Th key={index}>Characteristic {index + 1}</Th>
+                ))}
+                <Th>Oracle</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {rows.map((row) => (
+                <Tr key={row.testName}>
+                  <Td>{row.testName}</Td>
+                  {row.characteristicValues.map((val, index) => (
+                    <Td
+                      key={index}
+                      style={{
+                        backgroundColor:
+                          baseValues[index] === val ? '#d3e7c9' : 'inherit',
+                      }}
+                    >
+                      {val}
+                    </Td>
+                  ))}
+                  <Td>
+                    <OracleInput
+                      testName={row.testName}
+                      // Provide the current value from the ref; note that the ref won’t trigger re-renders.
+                      initialValue={oracleValuesRef.current[row.testName] || ''}
+                      onBlur={(value) => updateOracleValue(row.testName, value)}
+                    />
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </Box>
+      );
+    },
+  );
+
   return (
     <>
       <Box
@@ -229,14 +475,24 @@ const TableBuilder: React.FC = () => {
             onClick={addParameter}
           />
           <ActionButton
-            label="Copy HTML"
+            label="Copy ISP Table"
             icon={<CopyIcon />}
             onClick={copyToMarkdown}
           />
           <ActionButton
-            label="Preview Markdown"
+            label="Preview ISP Table"
             icon={<ViewIcon />}
-            onClick={previewMarkdown}
+            onClick={previewISP}
+          />
+          <ActionButton
+            label="Make Test Set"
+            icon={<FaFlask />}
+            onClick={previewBCC}
+          />
+          <ActionButton
+            label="Copy Test Set"
+            icon={<CopyIcon />}
+            onClick={copyBccToMarkdown}
           />
           <ActionButton
             label="Export JSON"
@@ -250,7 +506,6 @@ const TableBuilder: React.FC = () => {
             onChange={importFromJson}
             style={{ display: 'none' }}
           />
-
           <ActionButton
             label="Import JSON"
             icon={<FaFileUpload />}
@@ -279,6 +534,7 @@ const TableBuilder: React.FC = () => {
                 <Th color={theme.colors.text.primary}>Characteristic</Th>
                 <Th color={theme.colors.text.primary}>Partition</Th>
                 <Th color={theme.colors.text.primary}>Value</Th>
+                <Th color={theme.colors.text.primary}>Base</Th>
                 <Th color={theme.colors.text.primary}>Actions</Th>
               </Tr>
             </Thead>
@@ -302,7 +558,7 @@ const TableBuilder: React.FC = () => {
         </Box>
       </Box>
 
-      <Modal isOpen={isOpen} onClose={onClose} size="lg">
+      <Modal isOpen={isOpen} onClose={onClose} size="lg" autoFocus={false}>
         <ModalOverlay />
         <ModalContent
           bg={theme.colors.background.primary}
@@ -313,7 +569,7 @@ const TableBuilder: React.FC = () => {
             bg={theme.colors.background.secondary}
             color={theme.colors.text.primary}
           >
-            Markdown Preview
+            {isBccPreview ? 'Interactive BCC Test Set' : 'Markdown Preview'}
           </ModalHeader>
           <ModalCloseButton color={theme.colors.text.primary} />
           <ModalBody
@@ -322,46 +578,53 @@ const TableBuilder: React.FC = () => {
             overflow="auto"
           >
             <Box mt={3} p={3} overflow="auto">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]} // allow raw HTML in markdownPreview
-                components={{
-                  table: ({ ...props }) => (
-                    <table
-                      style={{
-                        borderCollapse: 'collapse',
-                        width: '100%',
-                        marginBottom: '1em',
-                      }}
-                      {...props}
-                    />
-                  ),
-                  th: ({ ...props }) => (
-                    <th
-                      style={{
-                        border: `1px solid ${tableBorderColor}`,
-                        padding: '8px',
-                        backgroundColor:
-                          theme.colors.background.secondary || '#f2f2f2',
-                        color: theme.colors.text.primary,
-                      }}
-                      {...props}
-                    />
-                  ),
-                  td: ({ ...props }) => (
-                    <td
-                      style={{
-                        border: `1px solid ${tableBorderColor}`,
-                        padding: '8px',
-                        color: theme.colors.text.primary,
-                      }}
-                      {...props}
-                    />
-                  ),
-                }}
-              >
-                {markdownPreview}
-              </ReactMarkdown>
+              {isBccPreview ? (
+                <BccTableInteractive
+                  parameters={parameters}
+                  updateOracleValue={updateOracleValue}
+                />
+              ) : (
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]} // allow raw HTML in markdownPreview
+                  components={{
+                    table: ({ ...props }) => (
+                      <table
+                        style={{
+                          borderCollapse: 'collapse',
+                          width: '100%',
+                          marginBottom: '1em',
+                        }}
+                        {...props}
+                      />
+                    ),
+                    th: ({ ...props }) => (
+                      <th
+                        style={{
+                          border: `1px solid ${tableBorderColor}`,
+                          padding: '8px',
+                          backgroundColor:
+                            theme.colors.background.secondary || '#f2f2f2',
+                          color: theme.colors.text.primary,
+                        }}
+                        {...props}
+                      />
+                    ),
+                    td: ({ ...props }) => (
+                      <td
+                        style={{
+                          border: `1px solid ${tableBorderColor}`,
+                          padding: '8px',
+                          color: theme.colors.text.primary,
+                        }}
+                        {...props}
+                      />
+                    ),
+                  }}
+                >
+                  {markdownPreview}
+                </ReactMarkdown>
+              )}
             </Box>
           </ModalBody>
         </ModalContent>
