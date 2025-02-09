@@ -1,6 +1,8 @@
 import React from "react";
 import { Tr, Td, Input, Button, useTheme } from "@chakra-ui/react";
 import { Characteristic, Parameter, Partition } from "../../types/types";
+import { CloseIcon } from "@chakra-ui/icons";
+import ActionButton from "./ActionButton";
 
 type PartitionRowProps = {
   parameter: Parameter;
@@ -55,17 +57,12 @@ const PartitionRow: React.FC<PartitionRowProps> = ({
         />
       </Td>
       <Td>
-        <Button
-          size="sm"
-          bg={theme.colors.delete[500]}
-          color={theme.colors.text.primary}
-          _hover={{ bg: theme.colors.delete[600] }}
-          onClick={() =>
-            deletePartition(parameter.id, characteristic.id, partition.id)
-          }
-        >
-          Delete
-        </Button>
+        <ActionButton 
+          label="Delete Partition"
+          icon={<CloseIcon />}
+          onClick={() => deletePartition(parameter.id, characteristic.id, partition.id)}
+          variant="delete"
+        />
       </Td>
     </Tr>
   );
