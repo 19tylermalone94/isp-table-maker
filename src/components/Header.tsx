@@ -35,6 +35,7 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme }) => {
             <IconButton
               icon={<FaGithub />}
               aria-label="View Source"
+              color={theme.colors.text.primary}
               _hover={{ bg: theme.colors.text.primary[600] }}
               bg="transparent"
             />
@@ -44,6 +45,7 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme }) => {
           <IconButton
             icon={<MoonIcon />}
             aria-label="Toggle Theme"
+            color={theme.colors.text.primary}
             _hover={{ bg: theme.colors.text.primary[600] }}
             bg="transparent"
             onClick={toggleTheme}
