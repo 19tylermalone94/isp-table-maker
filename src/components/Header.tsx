@@ -1,4 +1,4 @@
-import { Box, Flex, IconButton, Text, Spacer, useTheme, Link } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Text, Spacer, useTheme, Link, HStack } from "@chakra-ui/react";
 import { MoonIcon } from "@chakra-ui/icons";
 import { FaFlask, FaGithub } from "react-icons/fa";
 
@@ -12,10 +12,12 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme }) => {
   return (
     <Box as="header" bg={theme.colors.brand[600]} px={6} py={4} boxShadow="md">
       <Flex align="center">
-        <FaFlask />
-        <Text alignItems="center" fontSize="xl" fontWeight="bold" color={theme.colors.text.primary}>
-          ISP Table Maker
-        </Text>
+        <HStack>
+          <FaFlask />
+          <Text mt={1} fontSize="xl" fontWeight="bold" color={theme.colors.text.primary}>
+            ISP Table Maker
+          </Text>
+        </HStack>
         <Spacer />
         <Link 
           href="https://github.com/19tylermalone94/isp-table-maker" 

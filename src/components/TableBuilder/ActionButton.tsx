@@ -17,16 +17,16 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   variant = "default"
 }) => {
   const theme = useTheme();
-  
-  
+  const color = (variant === "delete") ? theme.colors.delete : theme.colors.brand;
+
   return (
     <Tooltip label={label} placement="top-start">
       <IconButton
         icon={icon}
         aria-label={label}
-        bg={variant === "delete" ? theme.colors.delete[500] : theme.colors.brand[500]}
         color={theme.colors.text.primary}
-        _hover={{ bg: {...variant === "delete" ? theme.colors.delete[600] : theme.colors.brand[600]}}}
+        bg={color[500]}
+        _hover={{ bg: color[600]}}
         onClick={onClick}
       />
     </Tooltip>

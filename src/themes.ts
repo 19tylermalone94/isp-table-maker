@@ -212,7 +212,7 @@ const cyberpunkTheme = extendTheme({
       700: "#990066",
     },
     text: {
-      primary: "#e0e0e0", // Light text for legibility against dark backgrounds.
+      primary: "#D4FF00", // Light text for legibility against dark backgrounds.
     },
     // Additional token for neon accents.
     neonGreen: "#39FF14",
@@ -253,6 +253,7 @@ const cyberpunkTheme = extendTheme({
         backgroundColor: "background.primary",
         color: "text.primary",
         lineHeight: "1.6",
+        fontFamily: "'VT323', monospace"
       },
       thead: {
         backgroundColor: "background.secondary",
