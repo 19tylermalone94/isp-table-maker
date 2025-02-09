@@ -258,6 +258,10 @@ const cyberpunkTheme = extendTheme({
       thead: {
         backgroundColor: 'background.secondary',
       },
+      'th': {
+        fontFamily: 'VT323, monospace !important',
+        fontSize: 'lg !important'
+      }
     },
   },
 });
