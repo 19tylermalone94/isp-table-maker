@@ -32,7 +32,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import ParameterRow from './ParameterRow';
 import { useParameters } from '../../hooks/useParameters';
-import { AddIcon, CopyIcon, DownloadIcon } from '@chakra-ui/icons';
+import { AddIcon, CloseIcon, CopyIcon, DownloadIcon } from '@chakra-ui/icons';
 import ActionButton from './ActionButton';
 import {
   FaFileUpload,
@@ -116,6 +116,10 @@ const TableBuilder: React.FC = () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, []);
+
+  const clearParameters = () => {
+    setParameters([]);
+  };
 
   const loadSample = () => {
     setParameters(sampleParameters);
@@ -611,6 +615,12 @@ const TableBuilder: React.FC = () => {
             label="Load Sample"
             icon={<FaQuestionCircle />}
             onClick={loadSample}
+          />
+          <ActionButton
+            label="Clear Table"
+            icon={<CloseIcon />}
+            onClick={clearParameters}
+            variant="delete"
           />
         </HStack>
 
