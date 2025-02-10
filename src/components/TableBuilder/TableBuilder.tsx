@@ -166,7 +166,7 @@ const TableBuilder: React.FC = () => {
             const partitionCode = `${characteristicLetter}${partIndex + 1}) ${part.name}`;
             let partitionCellStyle = '';
             if (part.id === char.basePartitionId) {
-              partitionCellStyle = ` style="background-color: ${accentColor};"`;
+              partitionCellStyle = ` style="background-color: ${accentColor}; padding-left: 0.5em;"`;
             }
             html += `<tr>
   `;
@@ -361,7 +361,7 @@ const TableBuilder: React.FC = () => {
     navigator.clipboard.writeText(markdown);
     toast({
       title: 'Copied to clipboard',
-      description: 'HTML table copied!',
+      description: 'ISP Table HTML',
       status: 'success',
       duration: 2000,
       isClosable: true,
@@ -384,7 +384,7 @@ const TableBuilder: React.FC = () => {
     navigator.clipboard.writeText(markdown);
     toast({
       title: 'Copied to clipboard',
-      description: 'BCC HTML table copied!',
+      description: 'Test Set HTML',
       status: 'success',
       duration: 2000,
       isClosable: true,

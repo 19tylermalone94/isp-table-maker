@@ -22,6 +22,66 @@ for more information.
 
 ### `npm run build`
 
+<table>
+    <thead>
+      <tr>
+        <th>Parameter</th>
+        <th>Characteristic</th>
+        <th>Partition</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+  <tr>
+        <td rowspan="5">Person</td>
+        <td rowspan="3">A) weight</td>
+        <td>A1) 0</td>
+        <td>0</td>
+      </tr>
+  <tr>
+        <td style="background-color: #d3e7c9;">A2) > 0 && < 180</td>
+        <td>150</td>
+      </tr>
+  <tr>
+        <td>A3) > 180</td>
+        <td>215</td>
+      </tr>
+  <tr>
+        <td rowspan="2">B) age</td>
+        <td>B1) 0</td>
+        <td>0</td>
+      </tr>
+  <tr>
+        <td style="background-color: #d3e7c9;">B2) > 0</td>
+        <td>72</td>
+      </tr>
+  <tr>
+        <td rowspan="5">Dog</td>
+        <td rowspan="3">C) breed</td>
+        <td>C1) pincher</td>
+        <td>pincher</td>
+      </tr>
+  <tr>
+        <td>C2) weiner</td>
+        <td>weiner</td>
+      </tr>
+  <tr>
+        <td style="background-color: #d3e7c9;">C3) labrodor</td>
+        <td>labrador</td>
+      </tr>
+  <tr>
+        <td rowspan="2">D) weight</td>
+        <td>D1) 0</td>
+        <td>0</td>
+      </tr>
+  <tr>
+        <td style="background-color: #d3e7c9;">D2) > 0</td>
+        <td>10</td>
+      </tr>
+    </tbody>
+  </table>
+
+
 Builds the app for production to the `build` folder.<br /> It correctly bundles
 React in production mode and optimizes the build for the best performance.
 
