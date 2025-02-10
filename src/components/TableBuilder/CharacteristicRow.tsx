@@ -156,7 +156,8 @@ const CharacteristicRow: React.FC<CharacteristicRowProps> = ({
                   basePartitionId: firstPartition.id,
                 })
               }
-              colorScheme="brand"
+              colorScheme="accent"
+              borderColor="brand.500"
             />
           </Td>
           <Td>

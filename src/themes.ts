@@ -15,16 +15,16 @@ const slateBlueTheme = extendTheme({
       900: '#182f62',
     },
     accent: {
-      50: '#fff7f0',
-      100: '#fdebdc',
-      200: '#fbd7b9',
-      300: '#f8c495',
-      400: '#f5b272',
-      500: '#f2a04f',
-      600: '#d9883d',
-      700: '#b0702c',
-      800: '#8e5820',
-      900: '#6b4214',
+      50: '#f6f8fa',
+      100: '#ebeff4',
+      200: '#d1d8e1',
+      300: '#b7c2ce',
+      400: '#9da9bb',
+      500: '#8490a8',
+      600: '#6a7695',
+      700: '#515e81',
+      800: '#38466d',
+      900: '#1f2e59',
     },
     background: {
       primary: '#f4f7fc',
@@ -61,8 +61,8 @@ const slateBlueTheme = extendTheme({
     Table: {
       variants: {
         simple: {
-          th: { borderColor: 'brand.500' },
-          td: { borderColor: 'brand.500' },
+          th: { borderColor: 'brand.900' },
+          td: { borderColor: 'brand.900' },
         },
       },
     },
@@ -76,6 +76,7 @@ const slateBlueTheme = extendTheme({
       },
       thead: {
         backgroundColor: 'background.secondary',
+        borderColor: 'brand.900',
       },
     },
   },

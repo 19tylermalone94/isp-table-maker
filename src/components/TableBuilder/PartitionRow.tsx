@@ -63,7 +63,8 @@ const PartitionRow: React.FC<PartitionRowProps> = ({
           name={`base-choice-${characteristic.id}`}
           isChecked={isBase}
           onChange={setBaseChoice}
-          colorScheme="brand"
+          colorScheme="accent"
+          borderColor="brand.500"
         />
       </Td>
       <Td>
