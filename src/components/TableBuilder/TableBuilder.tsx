@@ -67,7 +67,14 @@ const TableBuilder: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    console.log(parameters);
+  }, [parameters]);
+
+  useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (parameters === null || parameters.length === 0) {
+        return;
+      }
       event.preventDefault();
       event.returnValue =
         'Are you sure you want to leave? Unsaved changes will be lost.';
@@ -81,6 +88,7 @@ const TableBuilder: React.FC = () => {
 
   const clearParameters = () => {
     if (
+      parameters.length > 0 &&
       window.confirm(
         'Are you sure you want to clear the table? Unsaved data will be lost.',
       )
