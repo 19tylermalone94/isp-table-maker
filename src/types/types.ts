@@ -16,3 +16,8 @@ export type Parameter = {
   name: string;
   characteristics: Characteristic[];
 };
+
+export interface BccTestRow {
+  testName: string;
+  characteristicValues: string[];
+}
