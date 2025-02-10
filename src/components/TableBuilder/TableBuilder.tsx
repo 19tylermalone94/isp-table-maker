@@ -80,7 +80,13 @@ const TableBuilder: React.FC = () => {
   }, []);
 
   const clearParameters = () => {
-    setParameters([]);
+    if (
+      window.confirm(
+        'Are you sure you want to clear the table? Unsaved data will be lost.',
+      )
+    ) {
+      setParameters([]);
+    }
   };
 
   const loadSample = () => {
