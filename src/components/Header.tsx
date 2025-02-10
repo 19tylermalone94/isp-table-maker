@@ -22,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({ toggleTheme }) => {
     <Box as="header" bg={theme.colors.brand[500]} px={6} py={4} boxShadow="md">
       <Flex align="center">
         <Text fontSize="xl" fontWeight="bold" color={theme.colors.text.primary}>
-          ISP Table Maker
+          Input Space Partitioning & Test Table Maker
         </Text>
         <Spacer />
         <Link
