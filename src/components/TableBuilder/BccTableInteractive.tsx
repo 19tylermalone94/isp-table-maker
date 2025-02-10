@@ -64,11 +64,16 @@ const BccTableInteractive: React.FC<BccTableInteractiveProps> = ({
         <Thead>
           <Tr>
             <Th style={headerStyle}>Test</Th>
-            {rows[0].characteristicValues.map((_, index) => (
-              <Th key={index} style={headerStyle}>
-                Characteristic {String.fromCharCode(65 + index)}
-              </Th>
-            ))}
+            {parameters
+              .flatMap((p) => p.characteristics)
+              .map((char, index) => (
+                <Th key={index} style={headerStyle}>
+                  {parameters.find((p) => p.characteristics.includes(char))
+                    ?.name +
+                    ' ' +
+                    char.name}
+                </Th>
+              ))}
             <Th style={headerStyle}>Oracle</Th>
           </Tr>
         </Thead>

@@ -175,9 +175,11 @@ export const generateBccMarkdownWithOracle = (
   <thead>
     <tr>
       <th>Test</th>`;
-  rows[0].characteristicValues.forEach((_: string, index: number) => {
-    html += `<th>Characteristic ${String.fromCharCode(65 + index)}</th>`;
-  });
+  for (const p of parameters) {
+    for (const c of p.characteristics) {
+      html += `<th>${p.name + ' ' + c.name}</th>`;
+    }
+  }
   html += `<th>Oracle</th></tr></thead><tbody>`;
   rows.forEach((row: BccTestRow) => {
     html += `<tr>`;

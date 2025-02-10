@@ -30,7 +30,7 @@ export const buildBccTestRows = (parameters: Parameter[]): BccTestRow[] => {
       const basePart: Partition | undefined = gc.characteristic.partitions.find(
         (p: Partition) => p.id === gc.characteristic.basePartitionId,
       );
-      return basePart ? basePart.name : '';
+      return basePart ? basePart.value : '';
     }),
   };
   rows.push(baseRow);
@@ -44,13 +44,13 @@ export const buildBccTestRows = (parameters: Parameter[]): BccTestRow[] => {
           testName: `T${testCount}`,
           characteristicValues: globalChars.map((otherGC, j) => {
             if (j === charIndex) {
-              return part.name;
+              return part.value;
             } else {
               const base = otherGC.characteristic.partitions.find(
                 (p: Partition) =>
                   p.id === otherGC.characteristic.basePartitionId,
               );
-              return base ? base.name : '';
+              return base ? base.value : '';
             }
           }),
         };
