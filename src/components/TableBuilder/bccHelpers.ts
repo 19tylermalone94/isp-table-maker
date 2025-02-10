@@ -1,9 +1,9 @@
-import { Parameter, Partition, Characteristic } from '../../types/types';
-
-export interface BccTestRow {
-  testName: string;
-  characteristicValues: string[];
-}
+import {
+  Parameter,
+  Partition,
+  Characteristic,
+  BccTestRow,
+} from '../../types/types';
 
 export const buildBccTestRows = (parameters: Parameter[]): BccTestRow[] => {
   const rows: BccTestRow[] = [];

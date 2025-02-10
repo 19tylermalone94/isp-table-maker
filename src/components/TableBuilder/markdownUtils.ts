@@ -1,7 +1,6 @@
 import { WithCSSVar } from '@chakra-ui/react';
 import { Dict } from '@chakra-ui/utils';
-import { Parameter } from '../../types/types';
-import { BccTestRow } from './bccHelpers';
+import { BccTestRow, Parameter } from '../../types/types';
 
 export const generateMarkdownPreview = (
   parameters: Parameter[],

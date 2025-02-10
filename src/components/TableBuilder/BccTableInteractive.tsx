@@ -11,8 +11,8 @@ import {
   useTheme,
 } from '@chakra-ui/react';
 import OracleInput from './OracleInput';
-import { Parameter } from '../../types/types';
-import { BccTestRow, buildBccTestRows } from './bccHelpers';
+import { BccTestRow, Parameter } from '../../types/types';
+import { buildBccTestRows } from './bccHelpers';
 
 interface BccTableInteractiveProps {
   parameters: Parameter[];
