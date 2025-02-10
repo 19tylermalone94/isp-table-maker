@@ -13,6 +13,7 @@ import {
   Tr,
   Th,
   Td,
+  Text,
   useToast,
   HStack,
   useTheme,
@@ -24,27 +25,29 @@ import {
   ModalBody,
   useDisclosure,
   Input,
+  Stack, // <-- added Flex
 } from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import ParameterRow from './ParameterRow';
 import { useParameters } from '../../hooks/useParameters';
-import { AddIcon, CopyIcon, DownloadIcon, ViewIcon } from '@chakra-ui/icons';
+import { AddIcon, CopyIcon, DownloadIcon } from '@chakra-ui/icons';
 import ActionButton from './ActionButton';
-import { FaFileUpload, FaFlask } from 'react-icons/fa';
+import {
+  FaFileUpload,
+  FaFlask,
+  FaQuestionCircle,
+  FaTable,
+} from 'react-icons/fa';
 import { Characteristic, Parameter, Partition } from '../../types/types';
+import sampleParameters from './sample';
 
 interface BccTestRow {
   testName: string;
   characteristicValues: string[];
 }
 
-/**
- * OracleInput isolates the text box’s internal state.
- * It uses its own local state (initialized from the passed‑in value)
- * and only notifies the parent (via onBlur) without causing a re‑render.
- */
 interface OracleInputProps {
   testName: string;
   initialValue: string;
@@ -113,6 +116,17 @@ const TableBuilder: React.FC = () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, []);
+
+  const loadSample = () => {
+    setParameters(sampleParameters);
+    toast({
+      title: 'Loaded sample data',
+      description: 'Sample JSON has been loaded successfully.',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    });
+  };
 
   const generateMarkdownPreview = (): string => {
     const accentColor =
@@ -442,6 +456,7 @@ const TableBuilder: React.FC = () => {
           duration: 2000,
           isClosable: true,
         });
+        console.log(error);
       }
     };
     reader.readAsText(file);
@@ -562,25 +577,18 @@ const TableBuilder: React.FC = () => {
             icon={<AddIcon />}
             onClick={addParameter}
           />
+          {/*
+            Removed the copy buttons from the main toolbar.
+          */}
           <ActionButton
-            label="Copy ISP Table"
-            icon={<CopyIcon />}
-            onClick={copyToMarkdown}
-          />
-          <ActionButton
-            label="Preview ISP Table"
-            icon={<ViewIcon />}
+            label="View ISP Table"
+            icon={<FaTable />}
             onClick={previewISP}
           />
           <ActionButton
-            label="Make Test Set"
+            label="View Test Set"
             icon={<FaFlask />}
             onClick={previewBCC}
-          />
-          <ActionButton
-            label="Copy Test Set"
-            icon={<CopyIcon />}
-            onClick={copyBccToMarkdown}
           />
           <ActionButton
             label="Export JSON"
@@ -598,6 +606,11 @@ const TableBuilder: React.FC = () => {
             label="Import JSON"
             icon={<FaFileUpload />}
             onClick={() => fileInputRef.current?.click()}
+          />
+          <ActionButton
+            label="Load Sample"
+            icon={<FaQuestionCircle />}
+            onClick={loadSample}
           />
         </HStack>
 
@@ -657,9 +670,26 @@ const TableBuilder: React.FC = () => {
             bg={theme.colors.background.secondary}
             color={theme.colors.text.primary}
           >
-            {isBccPreview
-              ? 'Base Choice Coverage Test Set'
-              : 'ISP Table Preview'}
+            <Stack align="start">
+              <Text>
+                {isBccPreview
+                  ? 'Base Choice Coverage Test Set'
+                  : 'ISP Table Preview'}
+              </Text>
+              {isBccPreview ? (
+                <ActionButton
+                  label="Copy Test Set"
+                  icon={<CopyIcon />}
+                  onClick={copyBccToMarkdown}
+                />
+              ) : (
+                <ActionButton
+                  label="Copy ISP Table"
+                  icon={<CopyIcon />}
+                  onClick={copyToMarkdown}
+                />
+              )}
+            </Stack>
           </ModalHeader>
           <ModalCloseButton color={theme.colors.text.primary} />
           <ModalBody
