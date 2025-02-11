@@ -88,7 +88,8 @@ export const generateMarkdownCopy = (
   parameters: Parameter[],
   fixedGreen = '#d3e7c9',
 ): string => {
-  let html = `<table>
+  let html = `<h3>ISP Table</h3>
+  <table>
     <thead>
       <tr>
         <th>Parameter</th>
