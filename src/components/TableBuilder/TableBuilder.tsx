@@ -1,13 +1,12 @@
-// src/components/TableBuilder/TableBuilder.tsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Box,
   Table,
+  Text,
   Thead,
   Tbody,
   Tr,
   Th,
-  Text,
   useToast,
   HStack,
   useTheme,
@@ -21,9 +20,6 @@ import {
   Input,
   Stack,
 } from '@chakra-ui/react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
 import ParameterRow from './ParameterRow';
 import { useParameters } from '../../hooks/useParameters';
 import { AddIcon, CloseIcon, CopyIcon, DownloadIcon } from '@chakra-ui/icons';
@@ -33,15 +29,19 @@ import {
   FaFlask,
   FaQuestionCircle,
   FaTable,
+  FaCode, // import code icon
 } from 'react-icons/fa';
 import sampleParameters from './sample';
-import BccTableInteractive from './BccTableInteractive';
 import {
   generateMarkdownPreview,
   generateMarkdownCopy,
   generateBccMarkdownWithOracle,
 } from './markdownUtils';
 import { buildBccTestRows } from './bccHelpers';
+import BccTableInteractive from './BccTableInteractive';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 
 const TableBuilder: React.FC = () => {
   const {
@@ -61,9 +61,16 @@ const TableBuilder: React.FC = () => {
   const toast = useToast();
   const theme = useTheme();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isJUnitOpen,
+    onOpen: onJUnitOpen,
+    onClose: onJUnitClose,
+  } = useDisclosure();
   const [markdownPreview, setMarkdownPreview] = useState('');
   const [isBccPreview, setIsBccPreview] = useState(false);
+  const [javaCodePreview, setJavaCodePreview] = useState('');
   const oracleValuesRef = useRef<Record<string, string>>({});
+  const unitTestNamesRef = useRef<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -219,6 +226,41 @@ const TableBuilder: React.FC = () => {
     oracleValuesRef.current[testName] = value;
   }, []);
 
+  const updateUnitTestName = useCallback((testName: string, value: string) => {
+    unitTestNamesRef.current[testName] = value;
+  }, []);
+
+  // Function to generate Java test skeletons
+  const previewJUnitTests = () => {
+    const rows = buildBccTestRows(parameters);
+    if (rows.length === 0) {
+      toast({
+        title: 'No test rows generated',
+        description:
+          'Ensure all characteristics have a base partition selected.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+    // Generate a Java test skeleton for each row
+    const javaSkeletons = rows
+      .map((row) => {
+        // Use the unit test name if provided; otherwise, fall back to the default test name.
+        const junitName =
+          unitTestNamesRef.current[row.testName] ||
+          row.testName.replace(/\s+/g, '');
+        return `@Test
+public void ${junitName}() {
+    // TODO: implement test
+}`;
+      })
+      .join('\n\n');
+    setJavaCodePreview(javaSkeletons);
+    onJUnitOpen();
+  };
+
   return (
     <>
       <Box
@@ -243,6 +285,11 @@ const TableBuilder: React.FC = () => {
             label="View Test Set"
             icon={<FaFlask />}
             onClick={previewBCC}
+          />
+          <ActionButton
+            label="Preview JUnit Tests"
+            icon={<FaCode />}
+            onClick={previewJUnitTests}
           />
           <ActionButton
             label="Export JSON"
@@ -363,6 +410,8 @@ const TableBuilder: React.FC = () => {
                   parameters={parameters}
                   oracleValues={oracleValuesRef.current}
                   updateOracleValue={updateOracleValue}
+                  unitTestNames={unitTestNamesRef.current}
+                  updateUnitTestName={updateUnitTestName}
                 />
               ) : (
                 <ReactMarkdown
@@ -406,6 +455,40 @@ const TableBuilder: React.FC = () => {
                   {markdownPreview}
                 </ReactMarkdown>
               )}
+            </Box>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* New modal for JUnit test skeleton preview */}
+      <Modal
+        isOpen={isJUnitOpen}
+        onClose={onJUnitClose}
+        size="lg"
+        autoFocus={false}
+      >
+        <ModalOverlay />
+        <ModalContent
+          bg={theme.colors.background.primary}
+          maxW="90vw"
+          maxH="90vh"
+        >
+          <ModalHeader
+            bg={theme.colors.background.secondary}
+            color={theme.colors.text.primary}
+          >
+            JUnit Test Skeletons
+          </ModalHeader>
+          <ModalCloseButton color={theme.colors.text.primary} />
+          <ModalBody
+            bg={theme.colors.background.primary}
+            maxH="70vh"
+            overflow="auto"
+          >
+            <Box mt={3} p={3}>
+              <pre>
+                <code>{javaCodePreview}</code>
+              </pre>
             </Box>
           </ModalBody>
         </ModalContent>

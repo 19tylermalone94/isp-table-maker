@@ -11,6 +11,7 @@ import {
   useTheme,
 } from '@chakra-ui/react';
 import OracleInput from './OracleInput';
+import JUnitInput from './JUnitInput'; // import the new component
 import { BccTestRow, Parameter } from '../../types/types';
 import { buildBccTestRows } from './bccHelpers';
 
@@ -18,12 +19,16 @@ interface BccTableInteractiveProps {
   parameters: Parameter[];
   oracleValues: Record<string, string>;
   updateOracleValue: (testName: string, value: string) => void;
+  unitTestNames: Record<string, string>;
+  updateUnitTestName: (testName: string, value: string) => void;
 }
 
 const BccTableInteractive: React.FC<BccTableInteractiveProps> = ({
   parameters,
   oracleValues,
   updateOracleValue,
+  unitTestNames,
+  updateUnitTestName,
 }) => {
   const localTheme = useTheme();
 
@@ -75,6 +80,7 @@ const BccTableInteractive: React.FC<BccTableInteractiveProps> = ({
                 </Th>
               ))}
             <Th style={headerStyle}>Oracle</Th>
+            <Th style={headerStyle}>JUnit Test Name</Th> {/* New header */}
           </Tr>
         </Thead>
         <Tbody>
@@ -99,6 +105,13 @@ const BccTableInteractive: React.FC<BccTableInteractiveProps> = ({
                   testName={row.testName}
                   initialValue={oracleValues[row.testName] || ''}
                   onBlur={(value) => updateOracleValue(row.testName, value)}
+                />
+              </Td>
+              <Td>
+                <JUnitInput
+                  testName={row.testName}
+                  initialValue={unitTestNames[row.testName] || ''}
+                  onBlur={(value) => updateUnitTestName(row.testName, value)}
                 />
               </Td>
             </Tr>
