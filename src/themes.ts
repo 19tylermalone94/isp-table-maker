@@ -44,6 +44,7 @@ const slateBlueTheme = extendTheme({
       variants: {
         outline: {
           field: {
+            width: '15vw',
             borderColor: 'brand.500',
             _hover: { borderColor: 'brand.600' },
             _focus: {
@@ -126,6 +127,7 @@ const darkTheme = extendTheme({
       variants: {
         outline: {
           field: {
+            width: '15vw',
             borderColor: 'accent.500',
             _hover: { borderColor: 'accent.600' },
             _focus: {
@@ -208,6 +210,7 @@ const cyberpunkTheme = extendTheme({
       variants: {
         outline: {
           field: {
+            width: '15vw',
             borderColor: 'neonGreen',
             _hover: { borderColor: 'neonGreen' },
             _focus: {
