@@ -230,7 +230,6 @@ const TableBuilder: React.FC = () => {
     unitTestNamesRef.current[testName] = value;
   }, []);
 
-  // Function to generate Java test skeletons
   const previewJUnitTests = () => {
     const rows = buildBccTestRows(parameters);
     if (rows.length === 0) {
@@ -244,10 +243,8 @@ const TableBuilder: React.FC = () => {
       });
       return;
     }
-    // Generate a Java test skeleton for each row
     const javaSkeletons = rows
       .map((row) => {
-        // Use the unit test name if provided; otherwise, fall back to the default test name.
         const junitName =
           unitTestNamesRef.current[row.testName] ||
           row.testName.replace(/\s+/g, '');
@@ -259,6 +256,17 @@ public void ${junitName}() {
       .join('\n\n');
     setJavaCodePreview(javaSkeletons);
     onJUnitOpen();
+  };
+
+  const copyJUnitToClipboard = () => {
+    navigator.clipboard.writeText(javaCodePreview);
+    toast({
+      title: 'Copied to clipboard',
+      description: 'JUnit test skeletons have been copied.',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    });
   };
 
   return (
@@ -459,8 +467,6 @@ public void ${junitName}() {
           </ModalBody>
         </ModalContent>
       </Modal>
-
-      {/* New modal for JUnit test skeleton preview */}
       <Modal
         isOpen={isJUnitOpen}
         onClose={onJUnitClose}
@@ -477,7 +483,14 @@ public void ${junitName}() {
             bg={theme.colors.background.secondary}
             color={theme.colors.text.primary}
           >
-            JUnit Test Skeletons
+            <Stack align="start">
+              <Text>JUnit Test Skeletons</Text>
+              <ActionButton
+                label="Copy JUnit Tests"
+                icon={<CopyIcon />}
+                onClick={copyJUnitToClipboard}
+              />
+            </Stack>
           </ModalHeader>
           <ModalCloseButton color={theme.colors.text.primary} />
           <ModalBody
