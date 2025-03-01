@@ -126,6 +126,7 @@ const darkTheme = extendTheme({
       variants: {
         outline: {
           field: {
+            width: '15vw',
             borderColor: 'accent.500',
             _hover: { borderColor: 'accent.600' },
             _focus: {
