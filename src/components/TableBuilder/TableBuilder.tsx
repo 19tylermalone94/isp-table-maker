@@ -91,7 +91,7 @@ const TableBuilder: React.FC = () => {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, []);
+  }, [parameters]);
 
   const clearParameters = () => {
     if (
