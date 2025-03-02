@@ -166,6 +166,7 @@ export const generateMarkdownCopy = (
 export const generateBccMarkdownWithOracle = (
   parameters: Parameter[],
   oracleValues: Record<string, string>,
+  unitTestNames: Record<string, string>,
   buildBccTestRowsFn: (parameters: Parameter[]) => BccTestRow[],
 ): string => {
   const rows = buildBccTestRowsFn(parameters);
@@ -181,7 +182,7 @@ export const generateBccMarkdownWithOracle = (
       html += `<th>${p.name + ' ' + c.name}</th>`;
     }
   }
-  html += `<th>Oracle</th></tr></thead><tbody>`;
+  html += `<th>Oracle</th><th>JUnit Test</th></tr></thead><tbody>`;
   rows.forEach((row: BccTestRow) => {
     html += `<tr>`;
     html += `<td>${row.testName}</td>`;
@@ -190,7 +191,9 @@ export const generateBccMarkdownWithOracle = (
       html += `<td style="background-color: ${bgColor};">${val}</td>`;
     });
     const oracle = oracleValues[row.testName] || 'expected value/behavior';
+    const unitTestName = unitTestNames[row.testName] || row.testName;
     html += `<td>${oracle}</td>`;
+    html += `<td>${unitTestName}</td>`;
     html += `</tr>`;
   });
   html += `</tbody></table>`;
