@@ -143,6 +143,7 @@ const TableBuilder: React.FC = () => {
     const markdown = generateBccMarkdownWithOracle(
       parameters,
       oracleValuesRef.current,
+      unitTestNamesRef.current,
       buildBccTestRows,
     );
     if (!markdown) {
